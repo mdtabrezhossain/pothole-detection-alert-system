@@ -1,0 +1,43 @@
+{
+  "name": "pothole-detection-alert-system",
+  "type": "module",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "dev": "tsx watch src/app.ts",
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "db-generate": "drizzle-kit generate --config=./src/configs/orm.ts",
+    "db-push": "drizzle-kit push --config=./src/configs/orm.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mdtabrezhossain/Pothole-Detection-Alert-System.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mdtabrezhossain/Pothole-Detection-Alert-System/issues"
+  },
+  "homepage": "https://github.com/mdtabrezhossain/Pothole-Detection-Alert-System#readme",
+  "description": "",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.20.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.6.0",
+    "@types/pg": "^8.20.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  }
+}
