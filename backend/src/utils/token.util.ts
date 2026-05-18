@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import envVars from '../configs/env.config.js';
+import { error } from 'node:console';
 
 
 const { jwtSecretKey } = envVars;
@@ -17,7 +18,23 @@ export function createUserToken(id: string) {
         return token;
     }
     catch (error) {
-        console.error(`error while creating user token`);
+        console.error(`error while creating user jwt token`);
+        throw error;
+    }
+}
+
+export function verifyToken(token: string) {
+    try {
+        const payload = jwt.verify(token, jwtSecretKey);
+
+        if (typeof payload === "string") {
+            throw error;
+        }
+
+        return payload.user_id;
+    }
+    catch (error) {
+        console.log(`error while verifying user jwt token`);
         throw error;
     }
 }

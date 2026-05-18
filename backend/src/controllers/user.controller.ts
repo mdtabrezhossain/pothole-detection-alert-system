@@ -4,8 +4,7 @@ import { createUserToken } from "../utils/token.util.js";
 import { generateUserPasswordHash, verifyUserPassword } from "../utils/password.util.js";
 
 
-export async function createUser(request: Request, response: Response
-) {
+export async function createUser(request: Request, response: Response) {
     const { id, name, password } = request.body;
 
     if (!id || !name || !password) {
@@ -19,8 +18,7 @@ export async function createUser(request: Request, response: Response
     await db.query(
         `INSERT INTO users 
             (id, name, password_hash, role)
-            VALUES ($1, $2, $3, $4)
-            RETURNING *`,
+            VALUES ($1, $2, $3, $4)`,
         [id, name, passwordHash, "regular"]
     );
 
