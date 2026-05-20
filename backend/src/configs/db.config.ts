@@ -18,5 +18,6 @@ export async function connectDB() {
         console.log(`connected to database at ${result.rows[0].now}`);
     } catch (error) {
         console.error(`cannot connect to database: ${error}`);
+        process.exit(1);
     }
 }

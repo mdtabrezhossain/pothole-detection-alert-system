@@ -7,6 +7,7 @@ import userRouter from './routes/user.route.js'
 import potholeRouter from './routes/pothole.route.js'
 import { errorHandler } from './middlewares/error.middleware.js';
 import { createPotholesTables } from './models/pothole.model.js';
+import { insertJsonToPotholesTable } from '../others/insert-data.js'
 
 
 config();
