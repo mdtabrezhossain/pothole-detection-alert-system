@@ -11,7 +11,7 @@ export async function addPothole(request: Request, response: Response) {
         direction,
         image_link,
     } = request.body.pothole_details;
-    const { user_id } = request.body;
+    const { user_id } = request.body.user;
 
     const result = await db.query(
         `INSERT INTO potholes (
@@ -24,7 +24,7 @@ export async function addPothole(request: Request, response: Response) {
             uploaded_by
         )
         VALUES ($1, $2, $3, $4, $5, $6, $7)
-        RETURNING *`,
+        RETURNING *;`,
         [
             latitude,
             longitude,
@@ -37,12 +37,13 @@ export async function addPothole(request: Request, response: Response) {
     );
 
     return response
-        .status(200)
+        .status(201)
         .json({ pothole_details: result.rows[0] });
 }
 
 export async function getNearbyPotholes(request: Request, response: Response) {
-    const { lat, lng, radius } = request.query;
+    const { latitude, longitude } = request.body.user_location;
+    const radius = 1000;
 
     const result = await db.query(
         `SELECT * FROM (
@@ -61,7 +62,7 @@ export async function getNearbyPotholes(request: Request, response: Response) {
         ) AS temp_calculated_table
         WHERE distance < $3
         ORDER BY distance;`,
-        [lat, lng, radius]
+        [latitude, longitude, radius]
     );
 
     return response.json(result.rows);
@@ -71,39 +72,37 @@ export async function updatePothole(request: Request, response: Response) {
     const { id } = request.params;
     const { pothole_details } = request.body;
 
-    const allowedDetailFields = [
+    const allowedFields = [
         "severity_level",
         "direction",
         "image_link"
     ];
 
-    const updatableFields = Object
+    const fields = Object
         .keys(pothole_details)
-        .filter((field) => allowedDetailFields.includes(field));
+        .filter((field) => allowedFields.includes(field));
 
-    if (updatableFields.length === 0) {
+    if (fields.length === 0) {
         return response
             .status(400)
-            .json({ message: "no valid data provided for pothole detail update" });
+            .json({ message: "no valid data provided" });
     }
 
-    const setClause = updatableFields
+    const setClause = fields
         .map((field, idx) => `${field} = $${idx + 1}`)
         .join(", ");
 
-    const values = updatableFields.map((field) => pothole_details[field]);
+    const values = fields.map((field) => pothole_details[field]);
     values.push(id);
 
-    const query = `
-            UPDATE potholes
-            SET
-                ${setClause},
-                updated_at = NOW()
-            WHERE id = $${values.length}
-            RETURNING *
-        `;
-
-    const result = await db.query(query, values);
+    const result = await db.query(
+        `UPDATE potholes
+        SET
+            ${setClause},
+            updated_at = NOW()
+        WHERE id = $${values.length}
+        RETURNING *;`,
+        values);
 
     if (result.rows.length === 0) {
         return response
@@ -121,8 +120,7 @@ export async function removePothole(request: Request, response: Response) {
 
     const result = await db.query(
         `DELETE from potholes
-        WHERE id = $1
-        `,
+        WHERE id = $1;`,
         [id]
     );
 

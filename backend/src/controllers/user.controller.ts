@@ -2,84 +2,282 @@ import type { Request, Response } from "express";
 import { db } from "../configs/db.config.js";
 import { createUserToken } from "../utils/token.util.js";
 import { generateUserPasswordHash, verifyUserPassword } from "../utils/password.util.js";
-
+import type { CookieOptions } from "express";
+import { DatabaseError } from "pg";
 
 export async function createUser(request: Request, response: Response) {
-    const { id, name, password } = request.body;
+    try {
+        const { id: userId, name: userName, password: userPassword } = request.body.user;
 
-    if (!id || !name || !password) {
-        return response
-            .status(400)
-            .json({ error: "bad request: missing required fields" });
-    }
+        if (!userId || !userName || !userPassword) {
+            return response.status(400).json({
+                message: "bad request",
+                details: "Please provide all the information"
+            });
+        }
 
-    const passwordHash = await generateUserPasswordHash(password);
+        const passwordHash = await generateUserPasswordHash(userPassword);
 
-    await db.query(
-        `INSERT INTO users 
-            (id, name, password_hash, role)
-            VALUES ($1, $2, $3, $4)`,
-        [id, name, passwordHash, "regular"]
-    );
+        const result = await db.query(
+            `INSERT INTO users (id, name, password_hash, role)
+            VALUES ($1, $2, $3, $4)
+            RETURNING id, name, role;`,
+            [userId, userName, passwordHash, "regular"]
+        );
 
-    const user = { id, name };
-    const token = createUserToken(id);
+        const user = result.rows[0];
 
-    return response
-        .status(201)
-        .cookie("user_token", token, {
+        if (!user) {
+            return response.status(500).json({
+                message: "internal server error",
+                details: "Something went wrong on our side"
+            });
+
+        }
+
+        const { id, name, role } = user;
+        const token = createUserToken(id, name, role);
+
+        const cookieOptions: CookieOptions = {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: true,
-            // secure: true,
             sameSite: "none",
-        })
-        .json({ user });
+            // secure: true,
+        };
+
+        return response
+            .status(201)
+            .cookie("user_token", token, cookieOptions)
+            .json({ user });
+    }
+    catch (error) {
+        console.error(`Error from creating user => `, error);
+
+        if (error instanceof DatabaseError) {
+            if (error.code === "23505") {
+                return response.status(409).json({
+                    message: "conflict",
+                    details: "User already exists"
+                });
+            }
+        }
+
+        return response.status(500).json({
+            message: "internal server error",
+            details: "Something went wrong on our side"
+        });
+    }
 }
 
 export async function userLogin(request: Request, response: Response) {
-    const { id, password } = request.body;
+    try {
+        const { id: userId, password: userPassword } = request.body.user;
 
-    if (!id || !password) {
-        return response
-            .status(400)
-            .json({ error: "bad request: missing required field" });
-    }
+        if (!userId || !userPassword) {
+            return response.status(400).json({
+                message: "bad request",
+                details: "Please provide userId and password"
+            });
+        }
 
-    const result = await db.query(
-        `SELECT *
+        const result = await db.query(
+            `SELECT *
             FROM users
             WHERE id = $1;`,
-        [id]
-    );
+            [userId]
+        );
 
-    if (result.rows.length === 0) {
-        return response
-            .status(404)
-            .json({ error: "not found: user does not exist" });
-    }
+        const user = result.rows[0];
 
-    const passwordHash = result.rows[0].password_hash;
-    const isCorrectPassword = await verifyUserPassword(password, passwordHash);
+        if (!user) {
+            return response.status(404).json({
+                message: "not found",
+                details: "User does not exist"
+            });
+        }
 
-    if (!isCorrectPassword) {
-        return response
-            .status(403)
-            .json({ message: "forbidden: incorrect password" });
+        const passwordHash = user.password_hash;
+        const isCorrectPassword = await verifyUserPassword(userPassword, passwordHash);
 
-    }
+        if (!isCorrectPassword) {
+            return response.status(403).json({
+                message: "forbidden",
+                details: "Incorrect password"
+            });
+        }
 
-    const { name, created_at } = result.rows[0];
-    const user = { id, name, created_at };
-    const token = createUserToken(user.id);
+        const { id, name, role } = user;
+        const token = createUserToken(id, name, role);
 
-
-    return response
-        .status(200)
-        .cookie("user_token", token, {
+        const cookieOptions: CookieOptions = {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: true,
-            // secure: true,
             sameSite: "none",
-        })
-        .json({ user });
+            // secure: true,
+        };
+
+        return response
+            .status(200)
+            .cookie("user_token", token, cookieOptions)
+            .json({ user: { id, name, role } });
+
+    } catch (error) {
+        console.error(`Error logging-in user => `, error);
+
+        return response.status(500).json({
+            message: "internal server error",
+            details: "Something went wrong on our side"
+        });
+    }
+}
+
+export async function updateUser(request: Request, response: Response) {
+    try {
+        const targetUserId = request.params.id;
+        const { id: userId, name: userName, password: userPassword } = request.body.user;
+        const fieldsToUpdateWithPlaceholder: string[] = [];
+        const values: any[] = [];
+
+        if (userId) {
+            values.push(userId);
+            fieldsToUpdateWithPlaceholder.push(`id = $${values.length}`);
+        }
+        if (userName) {
+            values.push(userName);
+            fieldsToUpdateWithPlaceholder.push(`name = $${values.length}`);
+        }
+        if (userPassword) {
+            const passwordHash = await generateUserPasswordHash(userPassword);
+
+            values.push(passwordHash);
+            fieldsToUpdateWithPlaceholder.push(`password_hash = $${values.length}`);
+        }
+
+        if (fieldsToUpdateWithPlaceholder.length === 0) {
+            return response.status(400).json({
+                message: "bad request",
+                details: "No information given for update"
+            });
+        }
+
+        values.push(targetUserId);
+
+        const result = await db.query(
+            `UPDATE users
+            SET ${fieldsToUpdateWithPlaceholder.join(", ")}
+            WHERE id = $${values.length}
+            RETURNING id, name, role;`,
+            values
+        );
+
+        const user = result.rows[0];
+
+        if (!user) {
+            return response.status(404).json({
+                message: "not found",
+                details: "User does not exist"
+            });
+        }
+
+        const { id, name, role } = user;
+        const token = createUserToken(id, name, role);
+
+        const cookieOptions: CookieOptions = {
+            maxAge: 30 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            sameSite: "none",
+            // secure: true,
+        };
+
+        return response
+            .status(200)
+            .cookie("user_token", token, cookieOptions)
+            .json({ user });
+    } catch (error) {
+        console.error("Error updating user =>", error);
+
+        return response.status(500).json({
+            message: "internal server error",
+            details: "Something went on our side"
+        });
+    }
+}
+
+export async function deleteUser(request: Request, response: Response) {
+    try {
+        const targetUserId = request.params.id;
+
+        const result = await db.query(
+            `SELECT id, role, password_hash
+            FROM users
+            WHERE id = $1;`,
+            [targetUserId]
+        );
+
+        const targetUser = result.rows[0];
+        const isTargetUserAdmin = targetUser.role === 'admin';
+        const currentUser = request.body.currentUser;
+        const isSelfDelete = currentUser.id == targetUserId;
+
+        if (isSelfDelete) {
+            const userPassword = request.body.user.password;
+
+            if (!userPassword) {
+                return response.status(400).json({
+                    message: "bad request",
+                    details: "Please provide password"
+                });
+            }
+
+            const passwordHash = targetUser.password_hash
+
+            const isCorrectPassword = await verifyUserPassword(userPassword, passwordHash);
+
+            if (!isCorrectPassword) {
+                return response.status(403).json({
+                    message: "forbidden",
+                    details: "Incorrect password"
+                });
+            }
+        }
+        else if (isTargetUserAdmin) {
+            return response.status(403).json({
+                message: "forbidden",
+                details: "Admins cannot delete other admins"
+            });
+        }
+
+        const deleteResult = await db.query(
+            `DELETE FROM users
+            WHERE id = $1
+            RETURNING id, name, role;`,
+            [targetUserId]
+        );
+
+        if (isSelfDelete) {
+            const cookieOptions: CookieOptions = {
+                httpOnly: true,
+                sameSite: "none",
+                // secure: true
+            };
+
+            response.clearCookie("user_token", cookieOptions);
+        }
+
+        const deletedUser = deleteResult.rows[0];
+
+        return response.status(200).json({
+            message: "success",
+            details: "User deleted",
+            user: deletedUser
+        });
+
+    } catch (error) {
+        console.error("Error deleting user =>", error);
+
+        return response.status(500).json({
+            message: "internal server error",
+            details: "Something went wrong on our side"
+        });
+    }
 }

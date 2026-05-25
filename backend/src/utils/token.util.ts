@@ -1,13 +1,15 @@
-import jwt from 'jsonwebtoken';
+import jwt, { type JwtPayload } from 'jsonwebtoken';
 import envVars from '../configs/env.config.js';
-import { error } from 'node:console';
-
 
 const { jwtSecretKey } = envVars;
 
-export function createUserToken(id: string) {
+export function createUserToken(id: string, name: string, role: string) {
     try {
-        const payload = { user_id: id }
+        const payload = {
+            id,
+            name,
+            role
+        }
 
         const token = jwt.sign(
             payload,
@@ -23,15 +25,15 @@ export function createUserToken(id: string) {
     }
 }
 
-export function verifyToken(token: string) {
+export function verifyUserToken(token: string) {
     try {
         const payload = jwt.verify(token, jwtSecretKey);
 
         if (typeof payload === "string") {
-            throw error;
+            throw new Error("invalid token payload");
         }
 
-        return payload.user_id;
+        return payload;
     }
     catch (error) {
         console.log(`error while verifying user jwt token`);

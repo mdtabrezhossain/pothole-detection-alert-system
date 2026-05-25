@@ -3,8 +3,8 @@ import { db } from "../configs/db.config.js";
 
 export async function createPotholesTables() {
   try {
-    await db.query(`
-      CREATE TABLE IF NOT EXISTS potholes (
+    await db.query(
+      `CREATE TABLE IF NOT EXISTS potholes (
         id SERIAL PRIMARY KEY,
         latitude DECIMAL,
         longitude DECIMAL,
@@ -15,8 +15,7 @@ export async function createPotholesTables() {
         uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         uploaded_by VARCHAR REFERENCES users(id) ON DELETE CASCADE
-      );
-    `);
+      );`);
   } catch (error) {
     console.log('error while creating potholes table', error);
   }
