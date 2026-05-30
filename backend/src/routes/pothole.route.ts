@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authenticateUser } from "../middlewares/auth.middleware.js";
-import { addPothole, getNearbyPotholes, removePothole, updatePothole } from "../controllers/pothole.controller.js";
+import { createPothole, getNearbyPotholes, deletePothole, updatePothole, createVote } from "../controllers/pothole.controller.js";
 import { verifyOwnership } from "../middlewares/ownership.middleware.js";
 
 
@@ -8,18 +8,20 @@ const router = Router();
 
 router.route('/')
     .get(authenticateUser, getNearbyPotholes)
-    .post(authenticateUser, addPothole);
+    .post(authenticateUser, createPothole);
 
 router.route('/:id')
     .put(
         authenticateUser,
-        verifyOwnership('potholes', 'uploaded_by'),
         updatePothole
     )
     .delete(
         authenticateUser,
         verifyOwnership('potholes', 'uploaded_by'),
-        removePothole
+        deletePothole
     );
+
+router.route('/:id/vote')
+    .post(authenticateUser, createVote);
 
 export default router;

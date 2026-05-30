@@ -26,16 +26,8 @@ export async function createUser(request: Request, response: Response) {
         );
 
         const user = result.rows[0];
-
-        if (!user) {
-            return response.status(500).json({
-                message: "internal server error",
-                details: "Something went wrong on our side"
-            });
-
-        }
-
         const { id, name, role } = user;
+
         const token = createUserToken(id, name, role);
 
         const cookieOptions: CookieOptions = {
@@ -267,8 +259,6 @@ export async function deleteUser(request: Request, response: Response) {
         const deletedUser = deleteResult.rows[0];
 
         return response.status(200).json({
-            message: "success",
-            details: "User deleted",
             user: deletedUser
         });
 

@@ -1,19 +1,24 @@
-import express from 'express';
+import express, { type Request, type Response, type NextFunction } from "express";
 import { config } from "dotenv";
 import { connectDB } from './configs/db.config.js';
 import { createUsersTable } from './models/user.model.js';
 import cookieParser from "cookie-parser";
 import userRouter from './routes/user.route.js';
 import potholeRouter from './routes/pothole.route.js';
-import { createPotholesTables } from './models/pothole.model.js';
-// import { insertJsonToPotholesTable } from '../others/insert-data.js'
+import { createPotholesTable } from './models/pothole.model.js';
+import { createPotholeImagesTable } from './models/pothole-image.model.js';
+import { createPotholeVotesTables } from "./models/pothole-vote.model.js";
+import { insertJsonToPotholesTable } from '../others/insert-data.js'
 
 
 config();
 
 await connectDB();
 await createUsersTable();
-await createPotholesTables();
+await createPotholesTable();
+await createPotholeImagesTable();
+await createPotholeVotesTables();
+// await insertPotholesTable();
 
 const app = express();
 
@@ -23,6 +28,15 @@ app.use(cookieParser());
 
 app.use("/users", userRouter);
 app.use("/potholes", potholeRouter);
+
+app.use((error: Error, _: Request, response: Response, next: NextFunction) => {
+    console.error(error);
+
+    return response.status(500).json({
+        message: "Internal server error",
+        details: "Something went wrong"
+    });
+});
 
 
 const appPort = process.env.APP_PORT;

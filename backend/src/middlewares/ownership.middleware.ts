@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { db } from "../configs/db.config.js";
+import { verifyUserPassword } from "../utils/password.util.js";
 
 
 export function verifyOwnership(tableName: string, columnName: string) {
@@ -35,6 +36,25 @@ export function verifyOwnership(tableName: string, columnName: string) {
                 return response.status(403).json({
                     message: "forbidden",
                     details: "You are not allowed to access URL"
+                });
+            }
+
+            const { password: userPassword } = request.body.user;
+
+            const passwordSelectResult = await db.query(`
+                SELECT password_hash 
+                FROM users 
+                WHERE id = $1;`,
+                [ownerId]
+            );
+
+            const passwordHash = passwordSelectResult.rows[0].password_hash;
+            const isCorrectPassword = await verifyUserPassword(userPassword, passwordHash);
+
+            if (!isCorrectPassword) {
+                return response.status(403).json({
+                    message: "forbidden",
+                    details: "Incorrect password"
                 });
             }
 

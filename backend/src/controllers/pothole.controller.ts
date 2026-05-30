@@ -2,133 +2,267 @@ import type { Request, Response } from "express";
 import { db } from "../configs/db.config.js";
 
 
-export async function addPothole(request: Request, response: Response) {
-    const {
-        latitude,
-        longitude,
-        severity_level,
-        status,
-        direction,
-        image_link,
-    } = request.body.pothole_details;
-    const { user_id } = request.body.user;
+export async function createPothole(request: Request, response: Response) {
+    try {
+        const { pothole } = request.body;
+        const requiredFields = ["latitude", "longitude", "image_links"];
 
-    const result = await db.query(
-        `INSERT INTO potholes (
+        if (!pothole
+            || !requiredFields
+                .every(key => pothole[key] != null)
+        ) {
+            const missingFields = requiredFields
+                .filter(key => pothole?.[key] == null)
+                .join(", ");
+
+            return response.status(400).json({
+                message: "bad request",
+                details: `Missing required pothole fields: ${missingFields}`
+            });
+        }
+
+        const {
             latitude,
             longitude,
-            severity_level,
-            status,
-            direction,
-            image_link,
-            uploaded_by
-        )
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
-        RETURNING *;`,
-        [
-            latitude,
-            longitude,
-            severity_level,
-            status,
-            direction,
-            image_link,
-            user_id
-        ]
-    );
+            image_links: imageLinks,
+        } = pothole;
+        const radius = 15;
 
-    return response
-        .status(201)
-        .json({ pothole_details: result.rows[0] });
+        const nearbyPothole = await db.query(
+            `SELECT * FROM (
+                SELECT *,
+                    (
+                        6371000
+                        * acos(
+                            cos(radians($1))
+                            * cos(radians(latitude))
+                            * cos(radians(longitude) - radians($2))
+                            + sin(radians($1))
+                            * sin(radians(latitude)
+                        )
+                    )
+                ) 
+                AS distance
+                FROM potholes
+                WHERE status = 'active'
+            )
+            AS nearby_potholes
+            WHERE distance < $3
+            ORDER BY distance
+            LIMIT 1;`,
+            [latitude, longitude, radius]
+        );
+
+        if (nearbyPothole.rows[0]) {
+            return response.status(409).json({
+                message: "conflict",
+                details: "Pothole already exists. You can vote or upload images now",
+                pothole: { id: nearbyPothole.rows[0].id }
+            });
+        }
+
+        const { id: userId } = request.body.currentUser;
+
+        await db.query("BEGIN");
+
+        const potholeInsertResult = await db.query(
+            `INSERT INTO potholes (
+                latitude,
+                longitude,
+                status,
+                uploaded_by
+            )
+            VALUES ($1, $2, $3, $4)
+            RETURNING *;`,
+            [
+                latitude,
+                longitude,
+                "active",
+                userId
+            ]
+        );
+
+        const potholeId = potholeInsertResult.rows[0].id;
+
+        for (const link of imageLinks) {
+            await db.query(
+                `INSERT INTO pothole_images (
+                    link,
+                    pothole_id,
+                    uploaded_by
+                )
+                VALUES ($1, $2, $3);`,
+                [link, potholeId, userId]
+            );
+        }
+
+        await db.query("COMMIT");
+
+        return response.status(201)
+            .json({ pothole: { ...potholeInsertResult.rows[0] } });
+
+    } catch (error) {
+        await db.query("ROLLBACK");
+
+        console.error("Error while adding pothole =>", error);
+
+        return response.status(500).json({
+            message: "internal server error",
+            details: "Something went wrong on our side"
+        });
+    }
 }
 
 export async function getNearbyPotholes(request: Request, response: Response) {
-    const { latitude, longitude } = request.body.user_location;
-    const radius = 1000;
+    try {
+        const latitude = Number(request.query.lat);
+        const longitude = Number(request.query.lng);
+        const radius = 1000;
 
-    const result = await db.query(
-        `SELECT * FROM (
-            SELECT *,
-                (
-                    6371000 
-                    * acos(
+        const nearbyPotholes = await db.query(
+            `SELECT * FROM (
+                SELECT *,
+                    (
+                        6371000 
+                        * acos(
                         cos(radians($1))
                         * cos(radians(latitude))
                         * cos(radians(longitude) - radians($2))
                         + sin(radians($1))
                         * sin(radians(latitude))
-                    )
-                ) AS distance
-            FROM potholes
-        ) AS temp_calculated_table
-        WHERE distance < $3
-        ORDER BY distance;`,
-        [latitude, longitude, radius]
-    );
+                        )
+                )
+                AS distance
+                FROM potholes
+            ) 
+            AS nearby_potholes
+            WHERE distance < $3
+            ORDER BY distance;`,
+            [latitude, longitude, radius]
+        );
 
-    return response.json(result.rows);
+        return response.json(nearbyPotholes.rows);
+    }
+
+    catch (error) {
+        console.error("Error while getting nearby pothole =>", error);
+
+        return response.status(500).json({
+            message: "internal server error",
+            details: "Something went wrong on our side"
+        });
+    }
 }
 
 export async function updatePothole(request: Request, response: Response) {
-    const { id } = request.params;
-    const { pothole_details } = request.body;
+    try {
+        const potholeId = request.params.id;
+        const { image_links: imageLinks } = request.body.pothole;
 
-    const allowedFields = [
-        "severity_level",
-        "direction",
-        "image_link"
-    ];
+        if (!potholeId || !imageLinks || imageLinks.length === 0) {
+            return response.status(400)
+                .json({
+                    message: "bad request",
+                    details: "Missing pothole-id or images"
+                });
+        }
 
-    const fields = Object
-        .keys(pothole_details)
-        .filter((field) => allowedFields.includes(field));
+        await db.query("BEGIN");
 
-    if (fields.length === 0) {
-        return response
-            .status(400)
-            .json({ message: "no valid data provided" });
+        const result = await db.query(
+            `UPDATE potholes
+            SET updated_at = NOW()
+            WHERE id = $1
+            RETURNING *;`,
+            [potholeId]
+        );
+
+        if (!result.rows[0]) {
+            await db.query("ROLLBACK");
+
+            return response.status(404).json({
+                message: "pothole does not exist"
+            });
+        }
+
+        for (const link of imageLinks) {
+            const userId = request.body.currentUser.id;
+
+            await db.query(
+                `INSERT INTO pothole_images (
+                    link,
+                    pothole_id,
+                    uploaded_by
+                )
+                VALUES ($1, $2, $3);`,
+                [link, potholeId, userId]
+            );
+        }
+
+        await db.query("COMMIT");
+
+        return response.status(200).json({ pothole: result.rows[0] });
+    } catch (error) {
+        await db.query("ROLLBACK");
+
+        console.error("Error while updating pothole =>", error);
+
+        return response.status(500).json({
+            message: "internal server error",
+            details: "Something went wrong on our side"
+        });
     }
-
-    const setClause = fields
-        .map((field, idx) => `${field} = $${idx + 1}`)
-        .join(", ");
-
-    const values = fields.map((field) => pothole_details[field]);
-    values.push(id);
-
-    const result = await db.query(
-        `UPDATE potholes
-        SET
-            ${setClause},
-            updated_at = NOW()
-        WHERE id = $${values.length}
-        RETURNING *;`,
-        values);
-
-    if (result.rows.length === 0) {
-        return response
-            .status(404)
-            .json({ message: "pothole not found" });
-    }
-
-    return response
-        .status(200)
-        .json(result.rows[0]);
 }
 
-export async function removePothole(request: Request, response: Response) {
-    const { id } = request.params;
+export async function deletePothole(request: Request, response: Response) {
+    try {
+        const { id } = request.params;
 
-    const result = await db.query(
-        `DELETE from potholes
-        WHERE id = $1;`,
-        [id]
-    );
+        await db.query(`DELETE from potholes WHERE id = $1;`, [id]);
 
-    if (result.rowCount === 0) {
-        return response
-            .status(404)
-            .json({ message: "pothole not found" });
+        return response.status(204).json({ message: "no content" });
     }
+    catch (error) {
+        console.error("Error while deleting pothole =>", error);
 
-    return response.status(200).end();
+        return response.status(500).json({
+            message: "internal server error",
+            details: "Something went wrong on our side"
+        });
+    }
+}
+
+export async function createVote(request: Request, response: Response) {
+    try {
+        const potholeId = request.params.id;
+        const userId = request.body.currentUser.id;
+        const { type: voteType } = request.body.pothole.vote;
+
+        if (!voteType) {
+            return response.status(400)
+                .json({
+                    message: "bad request",
+                    details: "Missing vote type"
+                });
+        }
+
+        const result = await db.query(
+            `INSERT INTO pothole_votes
+            (type, pothole_id, voted_by)
+            VALUES ($1, $2, $3)
+            RETURNING *;`,
+            [voteType, potholeId, userId]
+        );
+
+        return response.status(200)
+            .json({ pothole_vote: { ...result.rows[0] } });
+
+    } catch (error) {
+        console.error("Error while pothole voting =>", error);
+
+        return response.status(500).json({
+            message: "internal server error",
+            details: "Something went wrong on our side"
+        });
+    }
 }
