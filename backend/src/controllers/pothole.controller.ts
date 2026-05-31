@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { db } from "../configs/db.config.js";
-
+import { evaluatePothole } from "../utils/pothole.util.js";
 
 export async function createPothole(request: Request, response: Response) {
     try {
@@ -41,12 +41,10 @@ export async function createPothole(request: Request, response: Response) {
                             * sin(radians(latitude)
                         )
                     )
-                ) 
-                AS distance
+                ) AS distance
                 FROM potholes
                 WHERE status = 'active'
-            )
-            AS nearby_potholes
+            ) AS nearby_potholes
             WHERE distance < $3
             ORDER BY distance
             LIMIT 1;`,
@@ -115,8 +113,8 @@ export async function createPothole(request: Request, response: Response) {
 
 export async function getNearbyPotholes(request: Request, response: Response) {
     try {
-        const latitude = Number(request.query.lat);
-        const longitude = Number(request.query.lng);
+        const latitude = request.query.lat;
+        const longitude = request.query.lng;
         const radius = 1000;
 
         const nearbyPotholes = await db.query(
@@ -131,12 +129,10 @@ export async function getNearbyPotholes(request: Request, response: Response) {
                         + sin(radians($1))
                         * sin(radians(latitude))
                         )
-                )
-                AS distance
+                ) AS distance
                 FROM potholes
-            ) 
-            AS nearby_potholes
-            WHERE distance < $3
+            ) AS nearby_potholes
+            WHERE distance < $3 AND status = 'active'
             ORDER BY distance;`,
             [latitude, longitude, radius]
         );
@@ -171,7 +167,7 @@ export async function updatePothole(request: Request, response: Response) {
 
         const result = await db.query(
             `UPDATE potholes
-            SET updated_at = NOW()
+            SET updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             RETURNING *;`,
             [potholeId]
@@ -236,26 +232,30 @@ export async function createVote(request: Request, response: Response) {
     try {
         const potholeId = request.params.id;
         const userId = request.body.currentUser.id;
-        const { type: voteType } = request.body.pothole.vote;
+        const { type: voteType, rating } = request.body.pothole.vote;
 
         if (!voteType) {
             return response.status(400)
                 .json({
                     message: "bad request",
-                    details: "Missing vote type"
+                    details: "Missing vote type or rating"
                 });
         }
 
-        const result = await db.query(
+        const insertVoteResult = await db.query(
             `INSERT INTO pothole_votes
-            (type, pothole_id, voted_by)
-            VALUES ($1, $2, $3)
+            (type, rating, pothole_id, voted_by)
+            VALUES ($1, $2, $3, $4)
             RETURNING *;`,
-            [voteType, potholeId, userId]
+            [voteType, rating, potholeId, userId]
         );
 
+        evaluatePothole(potholeId as string);
+
+        const vote = insertVoteResult.rows[0];
+
         return response.status(200)
-            .json({ pothole_vote: { ...result.rows[0] } });
+            .json({ pothole_vote: { ...vote } });
 
     } catch (error) {
         console.error("Error while pothole voting =>", error);
