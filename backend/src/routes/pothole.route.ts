@@ -1,14 +1,23 @@
 import { Router } from "express";
 import { authenticateUser } from "../middlewares/auth.middleware.js";
-import { createPothole, getNearbyPotholes, deletePothole, updatePothole, createVote } from "../controllers/pothole.controller.js";
+import {
+    createPothole,
+    deletePothole,
+    updatePothole,
+    createVote,
+    findNearbyPotholes,
+    getRealTimeAlerts
+} from "../controllers/pothole.controller.js";
 import { verifyOwnership } from "../middlewares/ownership.middleware.js";
 
 
 const router = Router();
 
 router.route('/')
-    .get(authenticateUser, getNearbyPotholes)
+    .get(findNearbyPotholes)
     .post(authenticateUser, createPothole);
+
+router.route('/alerts').get(getRealTimeAlerts);
 
 router.route('/:id')
     .put(
@@ -23,5 +32,6 @@ router.route('/:id')
 
 router.route('/:id/vote')
     .post(authenticateUser, createVote);
+
 
 export default router;

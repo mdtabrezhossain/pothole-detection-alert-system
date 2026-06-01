@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { db } from "../configs/db.config.js";
-import { evaluatePothole } from "../utils/pothole.util.js";
+import { angleDifference, calculateDirection, evaluatePothole, getNearbyPotholes } from "../utils/pothole.util.js";
+import { json } from "node:stream/consumers";
 
 export async function createPothole(request: Request, response: Response) {
     try {
@@ -25,37 +26,17 @@ export async function createPothole(request: Request, response: Response) {
             latitude,
             longitude,
             image_links: imageLinks,
+            severity,
         } = pothole;
         const radius = 15;
 
-        const nearbyPothole = await db.query(
-            `SELECT * FROM (
-                SELECT *,
-                    (
-                        6371000
-                        * acos(
-                            cos(radians($1))
-                            * cos(radians(latitude))
-                            * cos(radians(longitude) - radians($2))
-                            + sin(radians($1))
-                            * sin(radians(latitude)
-                        )
-                    )
-                ) AS distance
-                FROM potholes
-                WHERE status = 'active'
-            ) AS nearby_potholes
-            WHERE distance < $3
-            ORDER BY distance
-            LIMIT 1;`,
-            [latitude, longitude, radius]
-        );
+        const nearbyPotholes = await getNearbyPotholes(latitude, longitude, radius);
 
-        if (nearbyPothole.rows[0]) {
+        if (nearbyPotholes[0]) {
             return response.status(409).json({
                 message: "conflict",
                 details: "Pothole already exists. You can vote or upload images now",
-                pothole: { id: nearbyPothole.rows[0].id }
+                pothole: { id: nearbyPotholes[0].id }
             });
         }
 
@@ -68,14 +49,16 @@ export async function createPothole(request: Request, response: Response) {
                 latitude,
                 longitude,
                 status,
+                severity,
                 uploaded_by
             )
-            VALUES ($1, $2, $3, $4)
+            VALUES ($1, $2, $3, $4, $5)
             RETURNING *;`,
             [
                 latitude,
                 longitude,
                 "active",
+                severity,
                 userId
             ]
         );
@@ -111,33 +94,19 @@ export async function createPothole(request: Request, response: Response) {
     }
 }
 
-export async function getNearbyPotholes(request: Request, response: Response) {
+export async function findNearbyPotholes(request: Request, response: Response) {
     try {
-        const latitude = request.query.lat;
-        const longitude = request.query.lng;
-        const radius = 1000;
+        const { latitude, longitude } = request.body.user.location;
 
-        const nearbyPotholes = await db.query(
-            `SELECT * FROM (
-                SELECT *,
-                    (
-                        6371000 
-                        * acos(
-                        cos(radians($1))
-                        * cos(radians(latitude))
-                        * cos(radians(longitude) - radians($2))
-                        + sin(radians($1))
-                        * sin(radians(latitude))
-                        )
-                ) AS distance
-                FROM potholes
-            ) AS nearby_potholes
-            WHERE distance < $3 AND status = 'active'
-            ORDER BY distance;`,
-            [latitude, longitude, radius]
-        );
+        if (!latitude || !longitude) {
+            return response.status(400).json({
+                message: "bad request",
+                details: `Missing location latitude or longitude`
+            });
+        }
 
-        return response.json(nearbyPotholes.rows);
+        const nearbyPotholes = await getNearbyPotholes(latitude, longitude);
+        return response.json(nearbyPotholes);
     }
 
     catch (error) {
@@ -259,6 +228,47 @@ export async function createVote(request: Request, response: Response) {
 
     } catch (error) {
         console.error("Error while pothole voting =>", error);
+
+        return response.status(500).json({
+            message: "internal server error",
+            details: "Something went wrong on our side"
+        });
+    }
+}
+
+export async function getRealTimeAlerts(request: Request, response: Response) {
+    try {
+        const { latitude, longitude, heading } = request.body.user.location;
+
+        if (!latitude || !longitude || heading == null) {
+            return response.status(400).json({
+                message: "bad request",
+                details: `Missing location latitude or longitude or heading`
+            });
+        }
+
+        const potholes = await getNearbyPotholes(latitude, longitude, 100, 3);
+
+        if (!potholes) {
+            return response.status(200).end();
+        }
+
+        const potholesToAlert = [];
+
+        for (const pothole of potholes) {
+            const { latitude: potholeLatitude, longitude: potholeLongitude } = pothole;
+
+            const potholeDirection = calculateDirection(latitude, longitude, potholeLatitude, potholeLongitude);
+            const directionDifference = angleDifference(heading, potholeDirection);
+
+            if (directionDifference <= 30) {
+                potholesToAlert.push(pothole);
+            }
+        }
+
+        return response.status(200).json({ potholes: potholesToAlert });
+    } catch (error) {
+        console.error("Error while getting real time pothole alert =>", error);
 
         return response.status(500).json({
             message: "internal server error",

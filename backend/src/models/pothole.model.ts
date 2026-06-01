@@ -6,12 +6,12 @@ export async function createPotholesTable() {
     await db.query(
       `CREATE TABLE IF NOT EXISTS potholes (
         id SERIAL PRIMARY KEY,
-        latitude DECIMAL,
-        longitude DECIMAL,
+        latitude DECIMAL NOT NULL,
+        longitude DECIMAL NOT NULL,
         status VARCHAR(10) NOT NULL
           CHECK(status IN ('active', 'fixed')),
-        severity_level VARCHAR(6) NOT NULL
-          CHECK(severity_level IN ('low', 'medium', 'high')),
+        severity VARCHAR(6)
+          CHECK(severity IN ('low', 'medium', 'high')),
         uploaded_by VARCHAR REFERENCES users(id) ON DELETE CASCADE,
         uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
