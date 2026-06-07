@@ -61,7 +61,7 @@ export async function evaluatePothole(potholeId: string) {
 }
 
 export async function getNearbyPotholes(
-    latitude: number, longitude: number, radius: number = 1000, count?: number
+    latitude: number, longitude: number, radius: number = 100, count?: number
 ) {
     let query =
         `SELECT * FROM (
