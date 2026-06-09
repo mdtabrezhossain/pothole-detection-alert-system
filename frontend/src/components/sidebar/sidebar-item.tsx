@@ -48,8 +48,8 @@ function SidebarItem({ option }: Props) {
                     ${isOpen ? "max-h-96 opacity-100 mt-1" : "max-h-0 opacity-0"}
                 `}
             >
-                {subOptions?.map((opt) => (
-                    <li key={opt.path}>
+                {subOptions?.map((opt, i) => (
+                    <li key={i}>
                         <NavLink
                             to={opt.path}
                             className={({ isActive }) =>

@@ -1,7 +1,12 @@
+import MyMap from "@/components/my-map";
+import { useLoaderData } from "react-router";
+
 export default function PotholePage() {
+    const potholes = useLoaderData();
+
     return (
         <>
-            <div>Pothole </div>
+            <MyMap potholes={potholes} />
         </>
     );
 }

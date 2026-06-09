@@ -40,8 +40,8 @@ export default function Sidebar({ onClose }: Props) {
             </div>
 
             <ul className="space-y-2">
-                {data.map((option) => (
-                    <SidebarItem option={option} key={option.path} />
+                {data.map((option, i) => (
+                    <SidebarItem option={option} key={i} />
                 ))}
             </ul>
         </nav>

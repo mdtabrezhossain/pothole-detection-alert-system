@@ -1,6 +1,8 @@
 import { lazy } from "react";
 import { createBrowserRouter } from "react-router";
 import MainLayout from "@/layouts";
+import { getNearby } from "@/services/potholes";
+import Loading from "@/components/loading";
 
 
 
@@ -12,13 +14,14 @@ const router = createBrowserRouter([
         path: '/',
         Component: MainLayout,
         children: [
-            { index: true, Component: PotholePage },
+            { index: true, Component: PotholePage, loader: getNearby },
             { path: "user", Component: UserPage },
         ],
+        HydrateFallback: Loading
     },
     {
         path: '*',
-        element: <div>Not Found</div>
+        Component: Loading
     }
 ]);
 

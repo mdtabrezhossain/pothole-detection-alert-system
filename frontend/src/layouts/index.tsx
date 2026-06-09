@@ -4,6 +4,7 @@ import {
     IconLayoutSidebarLeftExpandFilled
 } from "@tabler/icons-react";
 import Sidebar from "@/components/sidebar/sidebar";
+import MyMap from "@/components/my-map";
 
 export default function MainLayout() {
     const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
@@ -25,7 +26,7 @@ export default function MainLayout() {
                 <Sidebar onClose={() => setIsSidebarOpen(false)} />
             </header>
 
-            <main>
+            <main className="h-screen">
                 <Outlet />
             </main>
         </>
