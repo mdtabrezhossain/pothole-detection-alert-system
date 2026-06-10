@@ -1,4 +1,4 @@
-import { IconLogin, IconMapPin, IconRoad, IconUserPlus } from "@tabler/icons-react";
+import { IconLogin, IconMapPin, IconMapPlus, IconRoad, IconUserPlus } from "@tabler/icons-react";
 
 import { ComponentType } from "react";
 
@@ -18,6 +18,11 @@ const data: SidebarOption[] = [
                 title: 'See nearby',
                 path: '#',
                 icon: IconMapPin
+            },
+            {
+                title: 'Add new',
+                path: '/potholes/new',
+                icon: IconMapPlus
             },
             {
                 title: 'Go',

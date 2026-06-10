@@ -3,20 +3,20 @@ const latitude = 22.551512;
 const longitude = 88.353779;
 
 export async function getNearby() {
-    // navigator.geolocation.getCurrentPosition(
-    //     function (position) {
-    //         const latitude = position.coords.latitude;
-    //         const longitude = position.coords.longitude;
-    //         console.log("Latitude:", latitude);
-    //         console.log("Longitude:", longitude);
-    //     })
+    try {
+        const response = await fetch(`${url}/potholes/?lat=${latitude}&lng=${longitude}`, {
+            method: "GET",
+            credentials: "include",
+        });
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+        if (!response.ok) {
+            console.error(response);
+            throw new Response("Failed to fetch nearby potholes");
+        }
 
-    const response = await fetch(`${url}/potholes/?lat=${latitude}&lng=${longitude}`, {
-        method: "GET",
-        credentials: "include",
-    });
-
-    return response.json();
+        return response.json();
+    } catch (error) {
+        throw new Response("Something went wrong while fetching nearby potholes",);
+    }
 }
+

@@ -3,7 +3,7 @@ import { createBrowserRouter } from "react-router";
 import MainLayout from "@/layouts";
 import { getNearby } from "@/services/potholes";
 import Loading from "@/components/loading";
-
+import ErrorPage from "@/pages/error";
 
 
 const PotholePage = lazy(() => import("@/pages/pothole"));
@@ -15,9 +15,11 @@ const router = createBrowserRouter([
         Component: MainLayout,
         children: [
             { index: true, Component: PotholePage, loader: getNearby },
+            // { index: true, Component: PotholePage },
             { path: "user", Component: UserPage },
         ],
-        HydrateFallback: Loading
+        HydrateFallback: Loading,
+        errorElement: <ErrorPage />
     },
     {
         path: '*',

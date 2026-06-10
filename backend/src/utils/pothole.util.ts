@@ -66,7 +66,7 @@ export async function getNearbyPotholes(
     let query =
         `SELECT * FROM (
             SELECT *,
-                (
+                FLOOR(
                     6371000 
                     * acos(
                         cos(radians($1))
@@ -77,7 +77,6 @@ export async function getNearbyPotholes(
                     )
                 ) AS distance
             FROM potholes
-            WHERE status = 'active'
         ) AS nearby_potholes
         WHERE distance < $3
         ORDER BY distance`;

@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import { db } from "../configs/db.config.js";
 import { angleDifference, calculateDirection, evaluatePothole, getNearbyPotholes } from "../utils/pothole.util.js";
-import { json } from "node:stream/consumers";
 
 export async function createPothole(request: Request, response: Response) {
     try {
@@ -96,16 +95,19 @@ export async function createPothole(request: Request, response: Response) {
 
 export async function findNearbyPotholes(request: Request, response: Response) {
     try {
-        const { latitude, longitude } = request.body.user.location;
+        const { lat, lng } = request.query;
 
-        if (!latitude || !longitude) {
+        if (!lat || !lng) {
             return response.status(400).json({
                 message: "bad request",
                 details: `Missing location latitude or longitude`
             });
         }
+        const latitude = Number(lat);
+        const longitude = Number(lng);
 
-        const nearbyPotholes = await getNearbyPotholes(latitude, longitude);
+        const nearbyPotholes = await getNearbyPotholes(latitude, longitude, 1000);
+
         return response.json(nearbyPotholes);
     }
 

@@ -8,7 +8,7 @@ export async function createPotholesTable() {
         id SERIAL PRIMARY KEY,
         latitude DECIMAL NOT NULL,
         longitude DECIMAL NOT NULL,
-        status VARCHAR(10) NOT NULL
+        status VARCHAR(10) NOT NULL DEFAULT 'active'
           CHECK(status IN ('active', 'fixed')),
         severity VARCHAR(6)
           CHECK(severity IN ('low', 'medium', 'high')),

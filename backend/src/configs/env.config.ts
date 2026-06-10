@@ -11,6 +11,7 @@ const envVars = Object.freeze({
     password: requiredEnv("POSTGRES_PASSWORD"),
     jwtSecretKey: requiredEnv("JWT_SECRET_KEY"),
     userPasswordPepper: requiredEnv("USER_PASSWORD_PEPPER"),
+    frontendUrl: requiredEnv("FRONTEND_URL"),
 });
 
 function requiredEnv(name: string): string {

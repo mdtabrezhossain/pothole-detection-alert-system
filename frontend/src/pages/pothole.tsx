@@ -1,4 +1,4 @@
-import MyMap from "@/components/my-map";
+import MyMap from "@/components/map/kolkata-map";
 import { useLoaderData } from "react-router";
 
 export default function PotholePage() {
