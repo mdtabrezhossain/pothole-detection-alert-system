@@ -1,29 +1,32 @@
 import { lazy } from "react";
 import { createBrowserRouter } from "react-router";
-import MainLayout from "@/layouts";
-import { getNearby } from "@/services/potholes";
+import DefaultLayout from '@/layouts/default'
 import Loading from "@/components/loading";
 import ErrorPage from "@/pages/error";
+import { getImageUploadToken } from "@/services/images";
 
 
-const PotholePage = lazy(() => import("@/pages/pothole"));
+const NearbyPotholesPage = lazy(() => import("@/pages/nearby-potholes"));
+const AddPotholePage = lazy(() => import("@/pages/add-pothole"));
 const UserPage = lazy(() => import("@/pages/user"));
 
 const router = createBrowserRouter([
     {
-        path: '/',
-        Component: MainLayout,
+        Component: DefaultLayout,
         children: [
-            { index: true, Component: PotholePage, loader: getNearby },
-            // { index: true, Component: PotholePage },
-            { path: "user", Component: UserPage },
+            { index: true, Component: NearbyPotholesPage },
+            { path: "/potholes/add", Component: AddPotholePage, loader: getImageUploadToken },
+            // { path: "/potholes/add", Component: AddPotholePage },
+            { path: "/user", Component: UserPage },
         ],
         HydrateFallback: Loading,
-        errorElement: <ErrorPage />
+        errorElement: <ErrorPage />,
     },
     {
         path: '*',
-        Component: Loading
+        element: <div>page does not exists</div>,
+        HydrateFallback: Loading,
+        errorElement: <ErrorPage />,
     }
 ]);
 

@@ -14,7 +14,7 @@ export async function getNearby() {
             throw new Response("Failed to fetch nearby potholes");
         }
 
-        return response.json();
+        return await response.json();
     } catch (error) {
         throw new Response("Something went wrong while fetching nearby potholes",);
     }

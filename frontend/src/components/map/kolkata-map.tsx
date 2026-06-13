@@ -20,7 +20,7 @@ export default function MyMap({ potholes }: Props) {
     const { theme } = useTheme();
 
     return (
-        <Card className="h-screen w-screen p-0 overflow-hidden">
+        <Card className="h-full w-full p-0 rounded-sm overflow-hidden">
             <Map
                 theme={theme}
                 className="h-full w-full"

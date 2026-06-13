@@ -1,12 +1,9 @@
-import { useState } from "react";
-import { Outlet } from "react-router";
-import {
-    IconLayoutSidebarLeftExpandFilled
-} from "@tabler/icons-react";
 import Sidebar from "@/components/sidebar/sidebar";
-import Topbar from "@/components/topbar";
+import { IconLayoutSidebarLeftExpandFilled } from "@tabler/icons-react";
+import { useState } from "react";
 
-export default function MainLayout() {
+
+export default function BaseLayout() {
     const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
 
     return (
@@ -21,15 +18,10 @@ export default function MainLayout() {
             )}
 
             <header className={`fixed top-0 left-0 z-10 h-screen w-70 transform border-r bg-sidebar transition-transform duration-300 ease
-            ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+                    ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
             >
                 <Sidebar onClose={() => setIsSidebarOpen(false)} />
             </header>
-
-            <main className="h-screen">
-                <Topbar closed={true} />
-                <Outlet />
-            </main>
         </>
     );
 }

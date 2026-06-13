@@ -1,27 +1,25 @@
 import { IconLogin, IconMapPin, IconMapPlus, IconRoad, IconUserPlus } from "@tabler/icons-react";
-
 import { ComponentType } from "react";
 
 export interface SidebarOption {
     title: string;
-    path: string;
+    path?: string;
     icon?: ComponentType<{ size?: number }>;
     subOptions?: SidebarOption[];
 }
 
 const data: SidebarOption[] = [
     {
-        title: 'Pothole',
-        path: '#',
+        title: 'Potholes',
         subOptions: [
             {
                 title: 'See nearby',
-                path: '#',
+                path: '/',
                 icon: IconMapPin
             },
             {
                 title: 'Add new',
-                path: '/potholes/new',
+                path: '/potholes/add',
                 icon: IconMapPlus
             },
             {
@@ -33,7 +31,6 @@ const data: SidebarOption[] = [
     },
     {
         title: 'User',
-        path: '#',
         subOptions: [
             {
                 title: 'Signup',
