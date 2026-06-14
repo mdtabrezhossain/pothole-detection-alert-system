@@ -17,8 +17,8 @@ export function ThemeProvider({ children }: Props) {
     const Provider = Context.Provider;
 
     function toggle() {
-        setTheme((current) => {
-            const newTheme = current === 'dark' ? 'light' : 'dark';
+        setTheme((prev) => {
+            const newTheme = prev === 'dark' ? 'light' : 'dark';
             localStorage.setItem('app-theme', newTheme);
 
             return newTheme;

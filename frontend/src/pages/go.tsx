@@ -1,19 +1,18 @@
-import TakePhoto from "@/components/image-upload";
+import MyMap from "@/components/map/kolkata-map";
 import { useTopBar } from "@/contexts/topbar";
 import { useLoaderData } from "react-router";
 
-export default function AddPotholePage() {
+export default function GoPage() {
     const response = useLoaderData();
     const { writeMessage, open } = useTopBar();
 
     if (response.error) {
         writeMessage(response.data.details);
         open(true);
+        return;
     }
 
     return (
-        <>
-            <TakePhoto imageUploadToken={response.data} />
-        </>
+        <MyMap potholes={response.data.potholes} />
     );
 }

@@ -1,22 +1,38 @@
-const url = import.meta.env.VITE_BACKEND_URL;
-const latitude = 22.551512;
-const longitude = 88.353779;
+import { RequestOptions } from "@/types/api";
+import { makeRequest } from "./fetch";
+
 
 export async function getNearby() {
-    try {
-        const response = await fetch(`${url}/potholes/?lat=${latitude}&lng=${longitude}`, {
-            method: "GET",
-            credentials: "include",
-        });
+    const latitude = 22.551512;
+    const longitude = 88.353779;
+    const requestOptions: RequestOptions = {
+        endpoint: `/potholes/?lat=${latitude}&lng=${longitude}`,
+        method: "GET",
+    };
 
-        if (!response.ok) {
-            console.error(response);
-            throw new Response("Failed to fetch nearby potholes");
-        }
-
-        return await response.json();
-    } catch (error) {
-        throw new Response("Something went wrong while fetching nearby potholes",);
-    }
+    return await makeRequest(requestOptions);
 }
 
+
+export async function getAlerts() {
+    const latitude = 22.549947;
+    const longitude = 88.353912;
+    // const heading = await getHeading();
+    const heading = 0;
+
+    const requestOptions: RequestOptions = {
+        endpoint: `/potholes/alerts/?lat=${latitude}&lng=${longitude}&hd=${heading}`,
+    };
+
+    return makeRequest(requestOptions);
+}
+
+function getHeading(): Promise<number | null> {
+    return new Promise((resolve) => {
+        window.addEventListener(
+            "deviceorientation",
+            (event) => resolve(event.alpha),
+            { once: true }
+        );
+    });
+}

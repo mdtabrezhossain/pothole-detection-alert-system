@@ -240,14 +240,19 @@ export async function createVote(request: Request, response: Response) {
 
 export async function getRealTimeAlerts(request: Request, response: Response) {
     try {
-        const { latitude, longitude, heading } = request.body.user.location;
+        const { lat, lng, hd } = request.query;
 
-        if (!latitude || !longitude || heading == null) {
+        if (!lat || !lng || hd == null) {
             return response.status(400).json({
                 message: "bad request",
                 details: `Missing location latitude or longitude or heading`
             });
         }
+
+        const latitude = Number(lat);
+        const longitude = Number(lng);
+        const heading = Number(hd);
+
 
         const potholes = await getNearbyPotholes(latitude, longitude, 100, 3);
 

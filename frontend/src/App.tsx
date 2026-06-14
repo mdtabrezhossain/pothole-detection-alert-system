@@ -3,15 +3,18 @@ import { RouterProvider } from "react-router"
 import router from './routes';
 import { Suspense } from "react";
 import Loading from "./components/loading";
+import { TopBarProvider } from "./contexts/topbar";
 
 
 function App() {
   return (
     <>
       <ThemeProvider>
-        <Suspense fallback={<Loading />}>
-          <RouterProvider router={router} />
-        </Suspense>
+        <TopBarProvider>
+          <Suspense fallback={<Loading />}>
+            <RouterProvider router={router} />
+          </Suspense>
+        </TopBarProvider>
       </ThemeProvider>
     </>
   );

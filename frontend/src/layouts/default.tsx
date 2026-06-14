@@ -8,10 +8,10 @@ export default function DefaultLayout() {
         <>
             <BaseLayout />
 
-            <main className="h-screen p-3">
-                <Topbar closed={true} />
+            <main className="h-svh p-3">
+                <Topbar />
 
-                <div className="h-svh w-full rounded-sm bg-secondary text-secondary-foreground shadow-2xl">
+                <div className="h-full w-full rounded-sm bg-secondary text-secondary-foreground shadow-2xl">
                     <Outlet />
                 </div>
             </main>

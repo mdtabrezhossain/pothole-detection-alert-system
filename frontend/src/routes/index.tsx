@@ -4,19 +4,22 @@ import DefaultLayout from '@/layouts/default'
 import Loading from "@/components/loading";
 import ErrorPage from "@/pages/error";
 import { getImageUploadToken } from "@/services/images";
+import { getAlerts, getNearby } from "@/services/potholes";
 
 
 const NearbyPotholesPage = lazy(() => import("@/pages/nearby-potholes"));
 const AddPotholePage = lazy(() => import("@/pages/add-pothole"));
+const GoPage = lazy(() => import("@/pages/go"));
 const UserPage = lazy(() => import("@/pages/user"));
 
 const router = createBrowserRouter([
     {
         Component: DefaultLayout,
         children: [
-            { index: true, Component: NearbyPotholesPage },
+            { index: true, Component: NearbyPotholesPage, loader: getNearby },
             { path: "/potholes/add", Component: AddPotholePage, loader: getImageUploadToken },
-            // { path: "/potholes/add", Component: AddPotholePage },
+            { path: "potholes/alerts", Component: GoPage, loader: getAlerts },
+            { path: "/potholes/add", Component: AddPotholePage },
             { path: "/user", Component: UserPage },
         ],
         HydrateFallback: Loading,

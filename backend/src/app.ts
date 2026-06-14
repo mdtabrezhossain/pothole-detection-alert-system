@@ -5,12 +5,13 @@ import { createUsersTable } from './models/user.model.js';
 import cookieParser from "cookie-parser";
 import userRouter from './routes/user.route.js';
 import potholeRouter from './routes/pothole.route.js';
+import imageRouter from './routes/image.route.js';
 import { createPotholesTable } from './models/pothole.model.js';
 import { createPotholeImagesTable } from './models/pothole-image.model.js';
 import { createPotholeVotesTables } from "./models/pothole-vote.model.js";
 import cors, { type CorsOptions } from "cors";
 import envVars from './configs/env.config.js';
-// import { insertJsonToPotholesTable } from '../others/insert-data.js'
+
 
 config();
 
@@ -19,7 +20,6 @@ await createUsersTable();
 await createPotholesTable();
 await createPotholeImagesTable();
 await createPotholeVotesTables();
-// await insertPotholesTable();
 
 const app = express();
 const { frontendUrl } = envVars;
@@ -34,8 +34,6 @@ const corsOptions: CorsOptions = {
             callback(new Error("CORS policy: Origin not allowed"));
         }
     },
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    // allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
 };
 
@@ -46,6 +44,7 @@ app.use(cookieParser());
 
 app.use("/users", userRouter);
 app.use("/potholes", potholeRouter);
+app.use("/images", imageRouter);
 
 app.use((error: Error, _: Request, response: Response, next: NextFunction) => {
     console.error(error);

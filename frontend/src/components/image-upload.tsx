@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { upload } from "@imagekit/react";
 import { ImageKitToken } from "@/types/images";
 import { IconCamera } from "@tabler/icons-react";
-
+import { uploadImage } from "@/services/images";
+import { useTopBar } from "@/contexts/topbar";
 
 interface Props {
     imageUploadToken: ImageKitToken;
@@ -13,14 +13,23 @@ export default function TakePhoto({ imageUploadToken }: Props) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [isUploading, setIsUploading] = useState<boolean>(false);
     const [isBlinking, setIsBlinking] = useState<boolean>(false);
+    const { writeMessage, open } = useTopBar();
 
     async function handleImage(e: React.ChangeEvent<HTMLInputElement>) {
         const image = e.target.files?.[0];
         if (!image) return;
 
         setIsUploading(true);
-        await uploadImage(image, imageUploadToken);
+        const response = await uploadImage(image, imageUploadToken);
         setIsUploading(false);
+
+        if (response?.error) {
+            writeMessage(response.data.details);
+        } else {
+            writeMessage(response?.data.message);
+        }
+
+        open(true);
     }
 
     useEffect(() => {
@@ -34,7 +43,7 @@ export default function TakePhoto({ imageUploadToken }: Props) {
         }, 300)
 
         return () => clearInterval(intervalId);
-    });
+    }, [isUploading]);
 
     return (
         <>
@@ -70,25 +79,4 @@ export default function TakePhoto({ imageUploadToken }: Props) {
             </div >
         </>
     )
-}
-
-async function uploadImage(file: File, imageKitToken: ImageKitToken) {
-    const { signature, expire, token, public_key: publicKey } = imageKitToken;
-
-    try {
-        const uploadResponse = await upload({
-            expire,
-            token,
-            signature,
-            publicKey,
-            file,
-            fileName: `pothole-${Date.now()}-username`
-        });
-
-        console.log("Upload response:", uploadResponse);
-
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-    } catch (error) {
-        console.error(`Error while uploading image\n${error}`);
-    }
 }
