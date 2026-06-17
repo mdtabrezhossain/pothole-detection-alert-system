@@ -28,7 +28,9 @@ export default function MapCoordinatePicker({ lat, lng }: Coords) {
         };
     }, [map]);
 
-    if (!coords) return null;
+    useEffect(() => {
+        setCoords({ lat, lng });
+    }, [lat, lng]);
 
     return (
         <div className="absolute bottom-4 left-4 z-10 rounded-md bg-background/90 border px-3 py-2 text-sm shadow-md pointer-events-none">

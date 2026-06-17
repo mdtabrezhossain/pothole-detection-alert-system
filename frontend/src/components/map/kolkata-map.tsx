@@ -1,16 +1,20 @@
-import { Map, MapControls } from "@/components/ui/map"
+import { Map, MapControls, MapMarker, MarkerContent } from "@/components/ui/map"
 import { Card } from "@/components/ui/card"
 import { useTheme } from "@/contexts/theme";
 import MapCoordinatePicker from "./coordinate-picker";
 import PotholeMarkers from "./pothole-markers";
 import { Pothole } from "@/types/potholes";
+import { Route } from "./route";
+import { IconHelmet } from "@tabler/icons-react";
 
 
 interface Props {
-    potholes?: Pothole[]
+    potholes?: Pothole[],
+    showRoute?: boolean,
+    userLocation?: { lat: number, lng: number }
 }
 
-export default function MyMap({ potholes }: Props) {
+export default function MyMap({ potholes, showRoute = false, userLocation }: Props) {
     const centerLat = 22.572087;
     const centerLng = 88.364187;
     const southWestCornerLat = 22.53;
@@ -32,11 +36,34 @@ export default function MyMap({ potholes }: Props) {
             >
                 <MapControls showFullscreen={true} />
 
-                <MapCoordinatePicker lat={centerLat} lng={centerLng} />
+                <PotholeMarkers potholes={potholes} />
 
-                <PotholeMarkers potholes={potholes}></PotholeMarkers>
+
+                {userLocation ?
+                    <MapCoordinatePicker
+                        lat={userLocation.lat}
+                        lng={userLocation.lng}
+                    />
+                    : <MapCoordinatePicker
+                        lat={centerLat}
+                        lng={centerLng}
+                    />
+                }
+
+                {userLocation &&
+                    <MapMarker
+                        latitude={Number(userLocation.lat)}
+                        longitude={Number(userLocation.lng)}
+                    >
+                        <MarkerContent>
+                            <IconHelmet color={theme === 'dark' ? "white" : "black"} />
+                        </MarkerContent>
+                    </MapMarker>
+                }
+
+                {showRoute && <Route />}
             </Map>
         </Card>
-    )
+    );
 }
 

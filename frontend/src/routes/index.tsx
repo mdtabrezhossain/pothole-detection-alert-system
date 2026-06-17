@@ -4,7 +4,7 @@ import DefaultLayout from '@/layouts/default'
 import Loading from "@/components/loading";
 import ErrorPage from "@/pages/error";
 import { getImageUploadToken } from "@/services/images";
-import { getAlerts, getNearby } from "@/services/potholes";
+import { getNearby } from "@/services/potholes";
 
 
 const NearbyPotholesPage = lazy(() => import("@/pages/nearby-potholes"));
@@ -18,7 +18,7 @@ const router = createBrowserRouter([
         children: [
             { index: true, Component: NearbyPotholesPage, loader: getNearby },
             { path: "/potholes/add", Component: AddPotholePage, loader: getImageUploadToken },
-            { path: "potholes/alerts", Component: GoPage, loader: getAlerts },
+            { path: "potholes/alerts", Component: GoPage },
             { path: "/potholes/add", Component: AddPotholePage },
             { path: "/user", Component: UserPage },
         ],
