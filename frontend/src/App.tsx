@@ -4,6 +4,7 @@ import router from './routes';
 import { Suspense } from "react";
 import Loading from "./components/loading";
 import { TopBarProvider } from "./contexts/topbar";
+import { VoteCardProvider } from "./contexts/vote-card";
 
 
 function App() {
@@ -11,9 +12,11 @@ function App() {
     <>
       <ThemeProvider>
         <TopBarProvider>
-          <Suspense fallback={<Loading />}>
-            <RouterProvider router={router} />
-          </Suspense>
+          <VoteCardProvider>
+            <Suspense fallback={<Loading />}>
+              <RouterProvider router={router} />
+            </Suspense>
+          </VoteCardProvider>
         </TopBarProvider>
       </ThemeProvider>
     </>

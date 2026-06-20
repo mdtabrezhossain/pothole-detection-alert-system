@@ -58,7 +58,7 @@ export default function TakePhoto({ imageUploadToken }: Props) {
                 <input
                     ref={inputRef}
                     type="file"
-                    accept="image/png, image/jpg"
+                    accept=".png, .jpg, .jpeg"
                     capture="environment"
                     onChange={handleImage}
                     className="hidden"

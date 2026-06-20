@@ -10,7 +10,7 @@ export async function createUsersTable() {
         role VARCHAR(7) NOT NULL DEFAULT 'regular'
           CHECK (role IN ('admin', 'regular')),
         password_hash VARCHAR(60) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
       );`);
   }
   catch (error) {

@@ -6,12 +6,12 @@ import cookieParser from "cookie-parser";
 import userRouter from './routes/user.route.js';
 import potholeRouter from './routes/pothole.route.js';
 import imageRouter from './routes/image.route.js';
+import voteRouter from './routes/vote.route.js';
 import { createPotholesTable } from './models/pothole.model.js';
 import { createPotholeImagesTable } from './models/pothole-image.model.js';
 import { createPotholeVotesTables } from "./models/pothole-vote.model.js";
 import cors, { type CorsOptions } from "cors";
 import envVars from './configs/env.config.js';
-
 
 config();
 
@@ -45,6 +45,7 @@ app.use(cookieParser());
 app.use("/users", userRouter);
 app.use("/potholes", potholeRouter);
 app.use("/images", imageRouter);
+app.use("/votes", voteRouter);
 
 app.use((error: Error, _: Request, response: Response, next: NextFunction) => {
     console.error(error);

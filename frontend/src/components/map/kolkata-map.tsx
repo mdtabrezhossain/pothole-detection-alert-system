@@ -56,7 +56,9 @@ export default function MyMap({ potholes, showRoute = false, userLocation }: Pro
                         longitude={Number(userLocation.lng)}
                     >
                         <MarkerContent>
-                            <IconHelmet color={theme === 'dark' ? "white" : "black"} />
+                            <div className={`rounded-full ${theme === 'dark' ? "bg-white" : "bg-black"}`}>
+                                <IconHelmet color={theme === 'dark' ? "black" : "white"} />
+                            </div>
                         </MarkerContent>
                     </MapMarker>
                 }

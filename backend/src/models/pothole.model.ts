@@ -13,8 +13,8 @@ export async function createPotholesTable() {
         severity VARCHAR(6)
           CHECK(severity IN ('low', 'medium', 'high')),
         uploaded_by VARCHAR REFERENCES users(id) ON DELETE CASCADE,
-        uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        uploaded_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
       );`
     );
   } catch (error) {

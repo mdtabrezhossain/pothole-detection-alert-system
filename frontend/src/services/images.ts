@@ -3,6 +3,7 @@ import { makeRequest } from "./fetch";
 import { ImageKitToken } from "@/types/images";
 import { upload } from "@imagekit/react";
 
+
 export async function getImageUploadToken() {
     const requestOptions: RequestOptions = { endpoint: '/images/upload' };
     return await makeRequest(requestOptions);
@@ -20,7 +21,7 @@ export async function uploadImage(file: File, imageKitToken: ImageKitToken) {
             file,
             fileName: `pothole-${Date.now()}-username`
         });
-
+        console.log(uploadResponse);
         const { fileId, url } = uploadResponse;
 
         if (fileId && url) {

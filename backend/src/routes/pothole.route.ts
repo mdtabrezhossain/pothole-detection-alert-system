@@ -4,7 +4,6 @@ import {
     createPothole,
     deletePothole,
     updatePothole,
-    createVote,
     findNearbyPotholes,
     getRealTimeAlerts
 } from "../controllers/pothole.controller.js";
@@ -29,9 +28,5 @@ router.route('/:id')
         verifyOwnership('potholes', 'uploaded_by'),
         deletePothole
     );
-
-router.route('/:id/vote')
-    .post(authenticateUser, createVote);
-
 
 export default router;

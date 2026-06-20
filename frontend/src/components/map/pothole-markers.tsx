@@ -4,6 +4,7 @@ import { Pothole } from "@/types/potholes";
 import { IconCircleFilled } from "@tabler/icons-react";
 import PotholeDetailsPopup from "./pothole-details-popup";
 
+
 interface Props {
     potholes?: Pothole[];
 }

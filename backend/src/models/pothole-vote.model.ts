@@ -15,7 +15,7 @@ export async function createPotholeVotesTables() {
           ),
         pothole_id INT REFERENCES potholes(id) ON DELETE CASCADE,
         voted_by VARCHAR REFERENCES users(id) ON DELETE CASCADE,
-        given_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        given_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
       );`
     );
   } catch (error) {
