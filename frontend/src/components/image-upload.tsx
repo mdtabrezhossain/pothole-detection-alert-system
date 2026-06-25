@@ -10,7 +10,6 @@ interface Props {
 
 export default function TakePhoto({ imageUploadToken }: Props) {
     const inputRef = useRef<HTMLInputElement>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
     const [isUploading, setIsUploading] = useState<boolean>(false);
     const [isBlinking, setIsBlinking] = useState<boolean>(false);
     const { writeMessage, open } = useTopBar();
@@ -48,7 +47,6 @@ export default function TakePhoto({ imageUploadToken }: Props) {
     return (
         <>
             <div
-                ref={containerRef}
                 className={`flex items-center justify-center w-full h-full transition-colors
                     ${isBlinking
                         ? 'bg-primary text-primary-foreground'

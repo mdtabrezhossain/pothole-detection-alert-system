@@ -6,7 +6,7 @@ import PotholeMarkers from "./pothole-markers";
 import { Pothole } from "@/types/potholes";
 import { Route } from "./route";
 import { IconHelmet } from "@tabler/icons-react";
-
+import { useImageCard } from "@/contexts/image-card";
 
 interface Props {
     potholes?: Pothole[],
@@ -17,10 +17,12 @@ interface Props {
 export default function MyMap({ potholes, showRoute = false, userLocation }: Props) {
     const centerLat = 22.572087;
     const centerLng = 88.364187;
+
     const southWestCornerLat = 22.53;
     const southWestCornerLng = 88.28;
     const northEastCornerLng = 88.46;
     const northEastCornerLat = 22.61;
+
     const { theme } = useTheme();
 
     return (

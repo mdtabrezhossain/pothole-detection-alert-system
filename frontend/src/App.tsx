@@ -5,19 +5,22 @@ import { Suspense } from "react";
 import Loading from "./components/loading";
 import { TopBarProvider } from "./contexts/topbar";
 import { VoteCardProvider } from "./contexts/vote-card";
+import { ImageCardProvider } from "./contexts/image-card";
 
 
 function App() {
   return (
     <>
       <ThemeProvider>
-        <TopBarProvider>
-          <VoteCardProvider>
-            <Suspense fallback={<Loading />}>
-              <RouterProvider router={router} />
-            </Suspense>
-          </VoteCardProvider>
-        </TopBarProvider>
+        <ImageCardProvider>
+          <TopBarProvider>
+            <VoteCardProvider>
+              <Suspense fallback={<Loading />}>
+                <RouterProvider router={router} />
+              </Suspense>
+            </VoteCardProvider>
+          </TopBarProvider>
+        </ImageCardProvider>
       </ThemeProvider>
     </>
   );

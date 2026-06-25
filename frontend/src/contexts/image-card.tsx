@@ -2,9 +2,9 @@ import { createContext, ReactNode, useContext, useState } from "react";
 
 
 interface ContextValues {
-    potholeId: number | null
+    imageSrc: string | null
     isOpen: boolean;
-    handleSetPotholeId(id: number): void,
+    handleSetImageSrc(src: string): void,
     open(val: boolean): void;
 }
 
@@ -14,21 +14,21 @@ interface Props {
 
 const Context = createContext<ContextValues | null>(null);
 
-export function VoteCardProvider({ children }: Props) {
+export function ImageCardProvider({ children }: Props) {
     const Provider = Context.Provider;
     const [isOpen, setIsOpen] = useState<boolean>(false);
-    const [potholeId, setPotholeId] = useState<number | null>(null);
+    const [imageSrc, setImageSrc] = useState<string | null>(null);
 
     function open(val: boolean) {
         setIsOpen(val);
     }
 
-    function handleSetPotholeId(id: number) {
-        setPotholeId(id);
+    function handleSetImageSrc(src: string) {
+        setImageSrc(src);
     }
 
 
-    const values = { potholeId, handleSetPotholeId, isOpen, open };
+    const values = { imageSrc, handleSetImageSrc, isOpen, open };
 
     return (
         <Provider value={values}>
@@ -37,11 +37,11 @@ export function VoteCardProvider({ children }: Props) {
     );
 }
 
-export function useVoteCard() {
+export function useImageCard() {
     const context = useContext(Context);
 
     if (!context) {
-        throw new Error("no vote card context found");
+        throw new Error("no image card context found");
     }
 
     return context;

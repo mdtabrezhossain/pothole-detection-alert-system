@@ -6,6 +6,7 @@ export default function NearbyPotholesPage() {
     const response = useLoaderData();
     const { writeMessage, open } = useTopBar();
 
+
     if (response.error) {
         writeMessage(response.data.details);
         open(true);
