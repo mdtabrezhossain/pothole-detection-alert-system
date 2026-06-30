@@ -1,5 +1,5 @@
 import ThemeToggle from "../theme-toggle";
-import data from "./sidebar-data";
+import data from "../../data/sidebar";
 import SidebarItem from "./sidebar-item";
 
 import {
@@ -16,6 +16,7 @@ interface Props {
 }
 
 export default function Sidebar({ onClose }: Props) {
+
     return (
         <nav className="h-full space-y-5 bg-sidebar p-3 text-sidebar-foreground text-sm">
             <div className="mb-10 mt-3 flex items-center justify-between pr-2">

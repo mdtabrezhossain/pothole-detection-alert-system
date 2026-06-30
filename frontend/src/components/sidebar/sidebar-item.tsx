@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import type { SidebarOption } from "./sidebar-data";
+import type { SidebarOption } from "../../data/sidebar";
 import {
     IconChevronDown,
     IconChevronUp,
 } from "@tabler/icons-react";
 import { NavLink } from "react-router";
+import { useUser } from "@/contexts/user";
 
 interface Props {
     option: SidebarOption;
@@ -15,10 +16,24 @@ function SidebarItem({ option }: Props) {
     const { title, path, icon: Icon, subOptions } = option;
 
     const [isOpen, setIsOpen] = useState(true);
+    const { isLoggedIn } = useUser();
 
     function toggle() {
         setIsOpen((prev) => !prev);
     }
+
+    const excludedOptions: string[] = [];
+
+    if (isLoggedIn) {
+        excludedOptions.push('Signup');
+        excludedOptions.push('Login');
+    } else {
+        excludedOptions.push('My account');
+    }
+
+    const visibleSubOptions = subOptions?.filter(
+        (opt) => !(excludedOptions.includes(opt.title))
+    );
 
     return (
         <>
@@ -48,7 +63,7 @@ function SidebarItem({ option }: Props) {
                     ${isOpen ? "max-h-96 opacity-100 mt-1" : "max-h-0 opacity-0"}
                 `}
             >
-                {subOptions?.map((opt, i) => (
+                {visibleSubOptions?.map((opt, i) => (
                     <li key={i}>
                         <NavLink
                             to={opt.path}

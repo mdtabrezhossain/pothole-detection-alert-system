@@ -22,18 +22,10 @@ await createPotholeImagesTable();
 await createPotholeVotesTables();
 
 const app = express();
-const { frontendUrl } = envVars;
-const allowedOrigins = [frontendUrl];
-const corsOptions: CorsOptions = {
-    origin: (origin, callback) => {
-        if (!origin) return callback(null, true);
 
-        if (allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error("CORS policy: Origin not allowed"));
-        }
-    },
+const { frontendUrl } = envVars;
+const corsOptions: CorsOptions = {
+    origin: frontendUrl,
     credentials: true,
 };
 

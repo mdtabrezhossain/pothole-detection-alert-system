@@ -1,4 +1,4 @@
-import { IconLogin, IconMapPin, IconMapPlus, IconRoad, IconUserPlus } from "@tabler/icons-react";
+import { IconLogin, IconLogout, IconMapPin, IconMapPlus, IconRoad, IconUserCircle, IconUserPlus } from "@tabler/icons-react";
 import { ComponentType } from "react";
 
 export interface SidebarOption {
@@ -7,6 +7,8 @@ export interface SidebarOption {
     icon?: ComponentType<{ size?: number }>;
     subOptions?: SidebarOption[];
 }
+
+const userid = localStorage.getItem('userid');
 
 const data: SidebarOption[] = [
     {
@@ -33,6 +35,11 @@ const data: SidebarOption[] = [
         title: 'User',
         subOptions: [
             {
+                title: 'My account',
+                path: `/users/${userid}`,
+                icon: IconUserCircle
+            },
+            {
                 title: 'Signup',
                 path: '/users/signup',
                 icon: IconUserPlus
@@ -41,7 +48,7 @@ const data: SidebarOption[] = [
                 title: 'Login',
                 path: '/users/login',
                 icon: IconLogin
-            },
+            }
         ],
     },
 ];

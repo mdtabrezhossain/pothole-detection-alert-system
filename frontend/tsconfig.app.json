@@ -30,6 +30,7 @@
     "noUncheckedSideEffectImports": true
   },
   "include": [
-    "src"
+    "src",
+    "src/data/sidebar.ts"
   ]
 }
