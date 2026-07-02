@@ -3,7 +3,8 @@ import {
     createUser,
     deleteUser,
     updateUser,
-    userLogin
+    userLogin,
+    userLogout
 } from "../controllers/user.controller.js";
 import { authenticateUser } from "../middlewares/auth.middleware.js";
 import { verifyOwnership } from "../middlewares/ownership.middleware.js";
@@ -12,7 +13,9 @@ import { verifyOwnership } from "../middlewares/ownership.middleware.js";
 const router = Router();
 
 router.route('/signup').post(createUser);
+
 router.route('/login').post(userLogin);
+router.route('/logout').post(authenticateUser, userLogout);
 
 router.route('/:id')
     .put(

@@ -1,4 +1,4 @@
-import { IconLogin, IconLogout, IconMapPin, IconMapPlus, IconRoad, IconUserCircle, IconUserPlus } from "@tabler/icons-react";
+import { IconLogin, IconMapPin, IconMapPlus, IconRoad, IconUserCircle, IconUserPlus } from "@tabler/icons-react";
 import { ComponentType } from "react";
 
 export interface SidebarOption {

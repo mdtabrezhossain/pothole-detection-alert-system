@@ -15,15 +15,19 @@ export default function DefaultLayout() {
 
     const isLoggedIn = localStorage.getItem('login');
     const userId = localStorage.getItem('userid');
+    const userName = localStorage.getItem('username');
 
-    const { setIsLoggedIn, handleSetUserId } = useUser();
+    const { setIsLoggedIn, handleSetUserId, handleSetUserName } = useUser();
 
     useEffect(() => {
-        if (isLoggedIn && userId) {
+        if (isLoggedIn
+            && userId
+            && userName) {
             setIsLoggedIn(true);
             handleSetUserId(userId);
+            handleSetUserName(userName);
         }
-    }, [isLoggedIn, userId, setIsLoggedIn, handleSetUserId]);
+    }, [isLoggedIn, userId, userName]);
 
     return (
         <>

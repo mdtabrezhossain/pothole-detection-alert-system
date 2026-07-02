@@ -12,7 +12,9 @@ export default function SignupPage() {
     const { writeMessage, open } = useTopBar();
     const navigate = useNavigate();
 
-    const { setIsLoggedIn, handleSetUserId } = useUser();
+    const { setIsLoggedIn,
+        handleSetUserId,
+        handleSetUserName } = useUser();
 
     async function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -26,16 +28,21 @@ export default function SignupPage() {
         if (response.error) {
             writeMessage(response.data.details);
         } else {
-            writeMessage("User created successfully");
+            const { id, name } = response.data.user;
+
+            writeMessage("Signup successfull");
 
             localStorage.removeItem('login');
             localStorage.removeItem('userid');
+            localStorage.removeItem('username');
 
             localStorage.setItem('login', 'true');
-            localStorage.setItem('userid', `${response.data.user.id}`);
+            localStorage.setItem('userid', `${id}`);
+            localStorage.setItem('username', `${name}`);
 
             setIsLoggedIn(true);
-            handleSetUserId(`${response.data.user.id}`);
+            handleSetUserId(`${id}`);
+            handleSetUserName(`${name}`);
 
             navigate('/');
         }

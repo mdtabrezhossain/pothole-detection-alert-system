@@ -4,8 +4,10 @@ import { createContext, ReactNode, useContext, useState } from "react";
 interface ContextValues {
     isLoggedIn: boolean;
     userId: string | null;
+    userName: string | null,
     setIsLoggedIn(val: boolean): void;
-    handleSetUserId(val: string): void;
+    handleSetUserId(val: string | null): void;
+    handleSetUserName(val: string | null): void;
 }
 
 interface Props {
@@ -18,16 +20,28 @@ export function UserProvider({ children }: Props) {
     const Provider = Context.Provider;
     const [isLoggedIn, setLogin] = useState<boolean>(false);
     const [userId, setUserId] = useState<string | null>(null);
+    const [userName, setUserName] = useState<string | null>(null);
 
     function setIsLoggedIn(val: boolean) {
         setLogin(val);
     }
 
-    function handleSetUserId(val: string) {
+    function handleSetUserId(val: string | null) {
         setUserId(val);
     }
 
-    const values = { isLoggedIn, userId, setIsLoggedIn, handleSetUserId };
+    function handleSetUserName(val: string | null) {
+        setUserName(val);
+    }
+
+    const values = {
+        isLoggedIn,
+        userId,
+        userName,
+        setIsLoggedIn,
+        handleSetUserId,
+        handleSetUserName
+    };
 
     return (
         <Provider value={values}>

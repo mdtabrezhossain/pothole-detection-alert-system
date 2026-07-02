@@ -40,7 +40,10 @@ export async function createUser(request: Request, response: Response) {
         return response
             .status(201)
             .cookie("user_token", token, cookieOptions)
-            .json({ user });
+            .json({
+                user,
+                message: 'Signup successful'
+            });
     }
     catch (error) {
         console.error(`Error from creating user => `, error);
@@ -111,10 +114,38 @@ export async function userLogin(request: Request, response: Response) {
         return response
             .status(200)
             .cookie("user_token", token, cookieOptions)
-            .json({ user: { id, name, role } });
+            .json({
+                user: { id, name, role },
+                message: 'Login successful'
+            });
 
     } catch (error) {
         console.error(`Error logging-in user => `, error);
+
+        return response.status(500).json({
+            message: "internal server error",
+            details: "Something went wrong on our side"
+        });
+    }
+}
+
+export async function userLogout(request: Request, response: Response) {
+    try {
+
+        const cookieOptions: CookieOptions = {
+            maxAge: 30 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            // sameSite: "none",
+            // secure: true,
+        };
+
+        return response
+            .status(200)
+            .clearCookie("user_token", cookieOptions)
+            .json({ message: 'Logout successful' });
+    }
+    catch (error) {
+        console.error(`Error logging-out user => `, error);
 
         return response.status(500).json({
             message: "internal server error",

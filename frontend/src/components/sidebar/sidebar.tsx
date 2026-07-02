@@ -45,6 +45,7 @@ export default function Sidebar({ onClose }: Props) {
                     <SidebarItem option={option} key={i} />
                 ))}
             </ul>
+
         </nav>
     );
 }

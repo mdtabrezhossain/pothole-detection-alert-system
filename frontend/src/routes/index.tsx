@@ -14,6 +14,9 @@ const ImagesPage = lazy(() => import("@/pages/images"));
 const UserPage = lazy(() => import("@/pages/user"));
 const LoginPage = lazy(() => import("@/pages/login"));
 const SignupPage = lazy(() => import("@/pages/signup"));
+const MyAccountPage = lazy(() => import("@/pages/my-account"));
+
+const userid = localStorage.getItem('userid');
 
 const router = createBrowserRouter([
     {
@@ -27,6 +30,7 @@ const router = createBrowserRouter([
             { path: "/potholes/images", Component: ImagesPage },
             { path: "users/login", Component: LoginPage },
             { path: "users/signup", Component: SignupPage },
+            { path: `/users/${userid}`, Component: MyAccountPage },
         ],
         HydrateFallback: Loading,
         errorElement: <ErrorPage />,

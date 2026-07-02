@@ -1,42 +1,52 @@
 import { useTopBar } from "@/contexts/topbar";
 import { useUser } from "@/contexts/user";
-import { LoginUser } from "@/services/user";
+import { loginUser } from "@/services/user";
 import { SubmitEvent, useState } from "react";
 import { useNavigate } from "react-router";
 
 export default function LoginPage() {
-    const [userId, setUserId] = useState("");
+    const [userIdInput, setUserIdInput] = useState("");
     const [password, setPassword] = useState("");
 
     const { writeMessage, open } = useTopBar();
     const navigate = useNavigate();
 
-    const { setIsLoggedIn, handleSetUserId } = useUser();
+    const {
+        setIsLoggedIn,
+        handleSetUserId,
+        handleSetUserName
+    } = useUser();
 
     async function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        const response = await LoginUser({
-            id: userId,
+        const response = await loginUser({
+            id: userIdInput,
             password
         });
 
         if (response.error) {
             writeMessage(response.data.details);
         } else {
-            writeMessage("Logged in successfully");
+            const { id, name } = response.data.user;
+
+            writeMessage(response.data.message);
 
             localStorage.removeItem('login');
             localStorage.removeItem('userid');
+            localStorage.removeItem('username');
 
             localStorage.setItem('login', 'true');
-            localStorage.setItem('userid', `${response.data.user.id}`);
+            localStorage.setItem('userid', `${id}`);
+            localStorage.setItem('username', `${name}`);
 
             setIsLoggedIn(true);
-            handleSetUserId(`${response.data.user.id}`);
+            handleSetUserId(`${id}`);
+            handleSetUserName(`${name}`);
 
             navigate('/');
         }
+
 
         open(true);
     };
@@ -58,8 +68,8 @@ export default function LoginPage() {
                             id="userid"
                             type="text"
                             placeholder="Enter your user-id"
-                            value={userId}
-                            onChange={(e) => setUserId(e.target.value)}
+                            value={userIdInput}
+                            onChange={(e) => setUserIdInput(e.target.value)}
                         />
                     </div>
 
