@@ -29,7 +29,6 @@ export async function authenticateUser(request: Request, response: Response, nex
                 message: "not found",
                 details: "User not found"
             });
-
         }
 
         request.body.currentUser = payload;
@@ -38,7 +37,7 @@ export async function authenticateUser(request: Request, response: Response, nex
         return;
     }
     catch (error) {
-        console.error("Error while authorization =>", error);
+        console.error("Error while user authorization =>", error);
 
         return response.status(500).json({
             message: "internal server error",
@@ -46,3 +45,31 @@ export async function authenticateUser(request: Request, response: Response, nex
         });
     }
 }
+
+export async function authenticateAdmin(request: Request, response: Response, nextFunction: NextFunction) {
+    try {
+        const { id } = request.body.currentUser;
+
+        const result = await db.query('SELECT role FROM users WHERE id = $1;', [id]);
+
+        if (result.rows[0].role !== 'admin') {
+            return response.status(403).json({
+                message: "forbidden",
+                details: "Only admins can access this url"
+            });
+        }
+
+        nextFunction();
+        return;
+    }
+    catch (error) {
+        console.error("Error while admin authorization =>", error);
+
+        return response.status(500).json({
+            message: "internal server error",
+            details: "Something went on our side"
+        });
+    }
+}
+
+

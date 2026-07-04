@@ -7,6 +7,7 @@ import { useVoteCard } from "@/contexts/vote-card";
 import ImageCard from "@/components/image-card";
 import { useImageCard } from "@/contexts/image-card";
 import { useUser } from "@/contexts/user";
+import A from "@/components/a";
 
 
 export default function DefaultLayout() {
@@ -34,7 +35,8 @@ export default function DefaultLayout() {
             <BaseLayout />
             <main className="h-svh p-3">
                 <Topbar />
-                {isOpen && <VotingCard />}
+                {/* {isOpen && <VotingCard />} */}
+                {isOpen && <A />}
                 {isImageCardOpen && <ImageCard />}
                 <div className="h-full w-full rounded-sm bg-secondary text-secondary-foreground shadow-2xl">
                     <Outlet />

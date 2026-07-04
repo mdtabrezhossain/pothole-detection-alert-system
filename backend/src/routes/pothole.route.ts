@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { authenticateUser } from "../middlewares/auth.middleware.js";
+import { authenticateAdmin, authenticateUser } from "../middlewares/auth.middleware.js";
 import {
     createPothole,
     deletePothole,
     updatePothole,
     findNearbyPotholes,
-    getRealTimeAlerts
+    getRealTimeAlerts,
+    changePothole
 } from "../controllers/pothole.controller.js";
 import { verifyOwnership } from "../middlewares/ownership.middleware.js";
 
@@ -19,14 +20,14 @@ router.route('/')
 router.route('/alerts').get(getRealTimeAlerts);
 
 router.route('/:id')
-    .put(
-        authenticateUser,
-        updatePothole
-    )
+    .put(authenticateUser, updatePothole)
     .delete(
         authenticateUser,
         verifyOwnership('potholes', 'uploaded_by'),
         deletePothole
     );
+
+router.route('/admin/:id')
+    .put(authenticateUser, authenticateAdmin, changePothole);
 
 export default router;

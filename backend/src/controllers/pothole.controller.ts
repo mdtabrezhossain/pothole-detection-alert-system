@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { db } from "../configs/db.config.js";
-import { angleDifference, calculateDirection, evaluatePothole, getNearbyPotholes } from "../utils/pothole.util.js";
+import { alterPothole, angleDifference, calculateDirection, evaluatePothole, getNearbyPotholes } from "../utils/pothole.util.js";
 
 export async function createPothole(request: Request, response: Response) {
     try {
@@ -237,6 +237,34 @@ export async function getRealTimeAlerts(request: Request, response: Response) {
         return response.status(200).json({ potholes: potholesToAlert });
     } catch (error) {
         console.error("Error while getting real time pothole alert =>", error);
+
+        return response.status(500).json({
+            message: "internal server error",
+            details: "Something went wrong on our side"
+        });
+    }
+}
+
+
+export async function changePothole(request: Request, response: Response) {
+    try {
+        const { id } = request.params;
+
+        if (Number.isNaN(Number(id))) {
+            response.status(400).json({ error: 'Invalid id' });
+            return;
+        }
+
+        const potholeId = Number(id);
+
+        const { status, severity } = request.body.pothole;
+        await alterPothole(potholeId, status, severity);
+
+        return response.status(200).json({
+            message: "success",
+        });
+    } catch (error) {
+        console.error("Error while changing pothole details =>", error);
 
         return response.status(500).json({
             message: "internal server error",

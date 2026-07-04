@@ -33,3 +33,16 @@ function getHeading(): Promise<number | null> {
         );
     });
 }
+
+export async function changePothole(id: number, status?: 'active' | 'fixed', severity?: 'low' | 'medium' | 'high') {
+    const pothole = { id, status, severity };
+
+    const requestOptions: RequestOptions = {
+        endpoint: `/potholes/admin/${id}`,
+        method: "PUT",
+        addCookies: true,
+        dataToSend: { pothole }
+    };
+
+    return await makeRequest(requestOptions);
+}

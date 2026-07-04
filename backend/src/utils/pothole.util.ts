@@ -118,3 +118,32 @@ export function angleDifference(a: number, b: number) {
     let diff = Math.abs(a - b);
     return Math.min(diff, 360 - diff);
 }
+
+export async function alterPothole(id: number, status?: 'active' | 'fixed', severity?: 'low' | 'medium' | 'high') {
+    const clauses: string[] = [];
+    const values: any[] = [];
+
+    if (status) {
+        clauses.push(`status = $${values.length + 1}`);
+        values.push(status);
+    }
+
+    if (severity) {
+        clauses.push(`severity = $${values.length + 1}`);
+        values.push(severity);
+    }
+
+    if (clauses.length === 0) {
+        return;
+    }
+
+    values.push(id);
+
+    const query = `
+        UPDATE potholes
+        SET ${clauses.join(", ")}
+        WHERE id = $${values.length};
+    `;
+
+    return await db.query(query, values);
+}
