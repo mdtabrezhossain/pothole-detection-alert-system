@@ -7,6 +7,7 @@ import { TopBarProvider } from "./contexts/topbar";
 import { VoteCardProvider } from "./contexts/vote-card";
 import { ImageCardProvider } from "./contexts/image-card";
 import { UserProvider } from "./contexts/user";
+import { PotholeProvider } from "./contexts/pothole";
 
 
 function App() {
@@ -14,15 +15,17 @@ function App() {
     <>
       <ThemeProvider>
         <ImageCardProvider>
-          <UserProvider>
-            <TopBarProvider>
-              <VoteCardProvider>
-                <Suspense fallback={<Loading />}>
-                  <RouterProvider router={router} />
-                </Suspense>
-              </VoteCardProvider>
-            </TopBarProvider>
-          </UserProvider>
+          <PotholeProvider>
+            <UserProvider>
+              <TopBarProvider>
+                <VoteCardProvider>
+                  <Suspense fallback={<Loading />}>
+                    <RouterProvider router={router} />
+                  </Suspense>
+                </VoteCardProvider>
+              </TopBarProvider>
+            </UserProvider>
+          </PotholeProvider>
         </ImageCardProvider>
       </ThemeProvider>
     </>

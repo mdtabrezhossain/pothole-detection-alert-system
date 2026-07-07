@@ -46,3 +46,16 @@ export async function changePothole(id: number, status?: 'active' | 'fixed', sev
 
     return await makeRequest(requestOptions);
 }
+
+export async function deletePothole(id: number) {
+    const pothole = { id };
+
+    const requestOptions: RequestOptions = {
+        endpoint: `/potholes/${id}`,
+        method: "DELETE",
+        addCookies: true,
+        dataToSend: { pothole }
+    };
+
+    return await makeRequest(requestOptions);
+}

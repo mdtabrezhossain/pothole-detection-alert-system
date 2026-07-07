@@ -14,7 +14,9 @@ export default function LoginPage() {
     const {
         setIsLoggedIn,
         handleSetUserId,
-        handleSetUserName
+        handleSetUserName,
+        handleSetIsAdmin,
+        isAdmin
     } = useUser();
 
     async function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
@@ -28,21 +30,25 @@ export default function LoginPage() {
         if (response.error) {
             writeMessage(response.data.details);
         } else {
-            const { id, name } = response.data.user;
+            const { id, name, role } = response.data.user;
 
             writeMessage(response.data.message);
 
             localStorage.removeItem('login');
             localStorage.removeItem('userid');
             localStorage.removeItem('username');
+            localStorage.removeItem('user_role');
 
             localStorage.setItem('login', 'true');
             localStorage.setItem('userid', `${id}`);
             localStorage.setItem('username', `${name}`);
+            localStorage.setItem('user_role', `${role}`);
 
             setIsLoggedIn(true);
             handleSetUserId(`${id}`);
             handleSetUserName(`${name}`);
+            // handleSetIsAdmin(role === 'admin');
+            handleSetIsAdmin(true);
 
             navigate('/');
         }

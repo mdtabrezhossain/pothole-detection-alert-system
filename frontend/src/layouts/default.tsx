@@ -4,10 +4,11 @@ import Topbar from "@/components/topbar";
 import BaseLayout from "@/layouts/base";
 import VotingCard from "@/components/vote-card";
 import { useVoteCard } from "@/contexts/vote-card";
-import ImageCard from "@/components/image-card";
+import ImageCard from "@/components/images/image-card";
 import { useImageCard } from "@/contexts/image-card";
 import { useUser } from "@/contexts/user";
-import A from "@/components/a";
+import PotholeUpdateCard from "@/components/pothole/update-card";
+import ModalDisplay from "@/components/modal-display";
 
 
 export default function DefaultLayout() {
@@ -17,8 +18,15 @@ export default function DefaultLayout() {
     const isLoggedIn = localStorage.getItem('login');
     const userId = localStorage.getItem('userid');
     const userName = localStorage.getItem('username');
+    const userRole = localStorage.getItem('user_role');
 
-    const { setIsLoggedIn, handleSetUserId, handleSetUserName } = useUser();
+    const {
+        isAdmin,
+        setIsLoggedIn,
+        handleSetUserId,
+        handleSetUserName,
+        handleSetIsAdmin
+    } = useUser();
 
     useEffect(() => {
         if (isLoggedIn
@@ -27,6 +35,7 @@ export default function DefaultLayout() {
             setIsLoggedIn(true);
             handleSetUserId(userId);
             handleSetUserName(userName);
+            handleSetIsAdmin(userRole === 'admin');
         }
     }, [isLoggedIn, userId, userName]);
 
@@ -35,8 +44,18 @@ export default function DefaultLayout() {
             <BaseLayout />
             <main className="h-svh p-3">
                 <Topbar />
-                {/* {isOpen && <VotingCard />} */}
-                {isOpen && <A />}
+                {isOpen && !isAdmin
+                    && <ModalDisplay>
+                        <VotingCard />
+                    </ModalDisplay>
+                }
+
+                {isOpen && isAdmin
+                    && <ModalDisplay>
+                        <PotholeUpdateCard />
+                    </ModalDisplay>
+                }
+
                 {isImageCardOpen && <ImageCard />}
                 <div className="h-full w-full rounded-sm bg-secondary text-secondary-foreground shadow-2xl">
                     <Outlet />

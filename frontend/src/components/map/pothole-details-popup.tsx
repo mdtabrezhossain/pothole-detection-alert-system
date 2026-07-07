@@ -3,6 +3,8 @@ import { MarkerPopup } from "../ui/map";
 import { useVoteCard } from "@/contexts/vote-card";
 import { useImageCard } from "@/contexts/image-card";
 import { useNavigate } from "react-router";
+import { useUser } from "@/contexts/user";
+import { usePothole } from "@/contexts/pothole";
 
 
 interface Props {
@@ -12,8 +14,14 @@ interface Props {
 export default function PotholeDetailsPopup({ pothole }: Props) {
     const keysToShow = ["distance", "severity", "status", "uploaded_by"];
     const valueUnits: Record<string, string> = { distance: "meters" };
-    const { handleSetPotholeId, open } = useVoteCard();
+
+    const { handleSetPotholeId } = usePothole();
+    const { isAdmin } = useUser();
+    if (isAdmin) keysToShow.push("id");
+
+    const { open } = useVoteCard();
     const { handleSetImageSrc, open: openImageCard } = useImageCard();
+
     const navigate = useNavigate();
 
     function showVoteCard() {
@@ -55,7 +63,7 @@ export default function PotholeDetailsPopup({ pothole }: Props) {
                 <button onClick={showVoteCard}
                     className="mt-3 py-1 px-1 rounded-sm w-full bg-primary text-primary-foreground"
                 >
-                    Vote
+                    {isAdmin ? 'Change' : 'Vote'}
                 </button>
 
             </MarkerPopup>

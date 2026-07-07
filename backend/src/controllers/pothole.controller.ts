@@ -187,7 +187,7 @@ export async function deletePothole(request: Request, response: Response) {
 
         await db.query(`DELETE from potholes WHERE id = $1;`, [id]);
 
-        return response.status(204).json({ message: "no content" });
+        return response.status(200).json({ message: "success" });
     }
     catch (error) {
         console.error("Error while deleting pothole =>", error);

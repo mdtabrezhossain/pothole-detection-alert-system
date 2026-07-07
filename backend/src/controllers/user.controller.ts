@@ -290,6 +290,7 @@ export async function deleteUser(request: Request, response: Response) {
         const deletedUser = deleteResult.rows[0];
 
         return response.status(200).json({
+            message: "success",
             user: deletedUser
         });
 

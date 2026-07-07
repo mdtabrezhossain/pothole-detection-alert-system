@@ -47,3 +47,16 @@ export async function updateUser(params: UserDetails) {
 
     return await makeRequest(requestOptions);
 }
+
+export async function adminUserDelete(id: string) {
+    const user = { id };
+
+    const requestOptions: RequestOptions = {
+        endpoint: `/users/${id}`,
+        method: "DELETE",
+        addCookies: true,
+        dataToSend: { user }
+    };
+
+    return await makeRequest(requestOptions);
+}

@@ -5,9 +5,11 @@ interface ContextValues {
     isLoggedIn: boolean;
     userId: string | null;
     userName: string | null,
+    isAdmin: boolean
     setIsLoggedIn(val: boolean): void;
     handleSetUserId(val: string | null): void;
     handleSetUserName(val: string | null): void;
+    handleSetIsAdmin(val: boolean): void;
 }
 
 interface Props {
@@ -21,6 +23,7 @@ export function UserProvider({ children }: Props) {
     const [isLoggedIn, setLogin] = useState<boolean>(false);
     const [userId, setUserId] = useState<string | null>(null);
     const [userName, setUserName] = useState<string | null>(null);
+    const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
     function setIsLoggedIn(val: boolean) {
         setLogin(val);
@@ -34,13 +37,19 @@ export function UserProvider({ children }: Props) {
         setUserName(val);
     }
 
+    function handleSetIsAdmin(val: boolean) {
+        setIsAdmin(val);
+    }
+
     const values = {
         isLoggedIn,
         userId,
         userName,
+        isAdmin,
         setIsLoggedIn,
         handleSetUserId,
-        handleSetUserName
+        handleSetUserName,
+        handleSetIsAdmin,
     };
 
     return (

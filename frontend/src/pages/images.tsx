@@ -1,4 +1,4 @@
-import ImageList from "@/components/image-list";
+import ImageList from "@/components/images/image-list";
 
 export default function TestPage() {
     const images = [

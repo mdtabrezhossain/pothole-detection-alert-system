@@ -1,4 +1,4 @@
-import TakePhoto from "@/components/image-upload";
+import TakePhoto from "@/components/images/image-upload";
 import { useTopBar } from "@/contexts/topbar";
 import { useLoaderData } from "react-router";
 

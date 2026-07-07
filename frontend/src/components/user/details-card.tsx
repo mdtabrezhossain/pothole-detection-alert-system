@@ -14,14 +14,11 @@ export default function UserDetailsCard() {
         handleSetUserName
     } = useUser();
 
-    // console.log("values in context", userId, userName);
-
     const [editProfile, setEditProfile] = useState(false);
     const [userIdInput, setUserIdInput] = useState(userId ?? '');
     const [userNameInput, setUserNameInput] = useState(userName ?? '');
 
     const passwordInputRef = useRef<HTMLInputElement>(null);
-    // console.log("values in input", userNameInput, userIdInput)
 
     const { writeMessage, open } = useTopBar();
     const navigate = useNavigate();
@@ -85,7 +82,7 @@ export default function UserDetailsCard() {
 
     return (
         <>
-            <div className="flex flex-col justify-center items-end gap-4 p-4 rounded-md bg-card text-secondary-foreground">
+            <div className="flex flex-col justify-center items-end gap-4 p-4 rounded-md border bg-card text-secondary-foreground">
                 {
                     editProfile ? (
                         <>
