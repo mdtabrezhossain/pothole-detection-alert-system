@@ -33,8 +33,8 @@ export async function createUser(request: Request, response: Response) {
         const cookieOptions: CookieOptions = {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: true,
-            // sameSite: 'none',
-            // secure: true
+            sameSite: 'none',
+            secure: true
         };
 
         return response
@@ -107,8 +107,8 @@ export async function userLogin(request: Request, response: Response) {
         const cookieOptions: CookieOptions = {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: true,
-            // sameSite: "none",
-            // secure: true,
+            sameSite: "none",
+            secure: true,
         };
 
         return response
@@ -135,8 +135,8 @@ export async function userLogout(request: Request, response: Response) {
         const cookieOptions: CookieOptions = {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: true,
-            // sameSite: "none",
-            // secure: true,
+            sameSite: "none",
+            secure: true,
         };
 
         return response
@@ -209,7 +209,7 @@ export async function updateUser(request: Request, response: Response) {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: true,
             sameSite: "none",
-            // secure: true,
+            secure: true,
         };
 
         return response
@@ -281,7 +281,7 @@ export async function deleteUser(request: Request, response: Response) {
             const cookieOptions: CookieOptions = {
                 httpOnly: true,
                 sameSite: "none",
-                // secure: true
+                secure: true
             };
 
             response.clearCookie("user_token", cookieOptions);

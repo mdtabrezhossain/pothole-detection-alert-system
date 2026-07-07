@@ -16,7 +16,6 @@ export default function LoginPage() {
         handleSetUserId,
         handleSetUserName,
         handleSetIsAdmin,
-        isAdmin
     } = useUser();
 
     async function handleSubmit(e: SubmitEvent<HTMLFormElement>) {

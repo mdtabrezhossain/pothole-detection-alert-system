@@ -5,8 +5,7 @@ import { getImageKitToken, getImageVerification, getImages } from "../controller
 const router = Router();
 
 router.route('/upload')
-    // .get(authenticateUser, getImageKitToken);
-    .get(getImageKitToken);
+    .get(authenticateUser, getImageKitToken);
 
 router.route('/verify')
     // .post(authenticateUser,getImageVerification);

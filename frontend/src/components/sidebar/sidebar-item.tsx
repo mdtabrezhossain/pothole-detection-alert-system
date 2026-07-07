@@ -39,7 +39,7 @@ function SidebarItem({ option }: Props) {
         <>
             <li>
                 <Link
-                    to={path}
+                    to={path || ''}
                     onClick={subOptions ? toggle : undefined}
                     className="flex justify-between rounded-md px-3 py-2 font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
@@ -66,7 +66,7 @@ function SidebarItem({ option }: Props) {
                 {visibleSubOptions?.map((opt, i) => (
                     <li key={i}>
                         <NavLink
-                            to={opt.path}
+                            to={opt.path || ''}
                             className={({ isActive }) =>
                                 `flex rounded-sm px-3 py-2 text-sm transition-colors
                                 ${isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"}`

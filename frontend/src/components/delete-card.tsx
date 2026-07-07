@@ -62,7 +62,3 @@ export default function DeleteByIdCard({ title, inputPlaceHolder, onDeleteByNume
         </>
     );
 }
-
-function writeMessage(details: any) {
-    throw new Error("Function not implemented.");
-}

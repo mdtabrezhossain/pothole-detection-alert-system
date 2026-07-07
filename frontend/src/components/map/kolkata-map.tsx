@@ -6,7 +6,7 @@ import PotholeMarkers from "./pothole-markers";
 import { Pothole } from "@/types/potholes";
 import { Route } from "./route";
 import { IconHelmet } from "@tabler/icons-react";
-import { useImageCard } from "@/contexts/image-card";
+
 
 interface Props {
     potholes?: Pothole[],
@@ -39,7 +39,6 @@ export default function MyMap({ potholes, showRoute = false, userLocation }: Pro
                 <MapControls showFullscreen={true} />
 
                 <PotholeMarkers potholes={potholes} />
-
 
                 {userLocation ?
                     <MapCoordinatePicker

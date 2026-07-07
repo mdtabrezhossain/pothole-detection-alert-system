@@ -24,15 +24,15 @@ export async function getAlerts(latitude: number = 22.549947, longitude: number 
     return makeRequest(requestOptions);
 }
 
-function getHeading(): Promise<number | null> {
-    return new Promise((resolve) => {
-        window.addEventListener(
-            "deviceorientation",
-            (event) => resolve(event.alpha),
-            { once: true }
-        );
-    });
-}
+// function getHeading(): Promise<number | null> {
+//     return new Promise((resolve) => {
+//         window.addEventListener(
+//             "deviceorientation",
+//             (event) => resolve(event.alpha),
+//             { once: true }
+//         );
+//     });
+// }
 
 export async function changePothole(id: number, status?: 'active' | 'fixed', severity?: 'low' | 'medium' | 'high') {
     const pothole = { id, status, severity };
