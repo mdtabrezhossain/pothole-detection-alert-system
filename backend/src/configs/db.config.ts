@@ -8,7 +8,7 @@ export const db = new Pool({
     user: envVars.user,
     password: envVars.password,
     database: envVars.database,
-    // ssl: { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: false }
 });
 
 export async function connectDB() {

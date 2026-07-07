@@ -6,9 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/app.ts",
     "build": "tsc",
-    "start": "node dist/app.js",
-    "db-generate": "drizzle-kit generate --config=./src/configs/orm.ts",
-    "db-push": "drizzle-kit push --config=./src/configs/orm.ts"
+    "start": "node dist/src/app.js"
   },
   "repository": {
     "type": "git",
