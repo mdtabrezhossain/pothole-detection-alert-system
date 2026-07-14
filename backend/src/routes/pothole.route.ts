@@ -9,13 +9,14 @@ import {
     changePothole
 } from "../controllers/pothole.controller.js";
 import { verifyOwnership } from "../middlewares/ownership.middleware.js";
+import { getImageVerification } from "../controllers/image.controller.js";
 
 
 const router = Router();
 
 router.route('/')
     .get(findNearbyPotholes)
-    .post(authenticateUser, createPothole);
+    .post(authenticateUser, getImageVerification, createPothole);
 
 router.route('/alerts').get(getRealTimeAlerts);
 

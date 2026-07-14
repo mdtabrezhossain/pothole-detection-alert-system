@@ -1,11 +1,12 @@
 import type { Request, Response } from "express";
 import { db } from "../configs/db.config.js";
-import { alterPothole, angleDifference, calculateDirection, evaluatePothole, getNearbyPotholes } from "../utils/pothole.util.js";
+import { alterPothole, angleDifference, calculateDirection, getNearbyPotholes } from "../utils/pothole.util.js";
 
 export async function createPothole(request: Request, response: Response) {
     try {
         const { pothole } = request.body;
-        const requiredFields = ["latitude", "longitude", "image_links"];
+
+        const requiredFields = ["latitude", "longitude", "image_link"];
 
         if (!pothole
             || !requiredFields
@@ -24,7 +25,7 @@ export async function createPothole(request: Request, response: Response) {
         const {
             latitude,
             longitude,
-            image_links: imageLinks,
+            image_link: imageLink,
             severity,
         } = pothole;
         const radius = 15;
@@ -64,22 +65,20 @@ export async function createPothole(request: Request, response: Response) {
 
         const potholeId = potholeInsertResult.rows[0].id;
 
-        for (const link of imageLinks) {
-            await db.query(
-                `INSERT INTO pothole_images (
+        await db.query(
+            `INSERT INTO pothole_images (
                     link,
                     pothole_id,
                     uploaded_by
                 )
                 VALUES ($1, $2, $3);`,
-                [link, potholeId, userId]
-            );
-        }
+            [imageLink, potholeId, userId]
+        );
 
         await db.query("COMMIT");
 
         return response.status(201)
-            .json({ pothole: { ...potholeInsertResult.rows[0] } });
+            .json({ message: 'Pothole added successfully' });
 
     } catch (error) {
         await db.query("ROLLBACK");

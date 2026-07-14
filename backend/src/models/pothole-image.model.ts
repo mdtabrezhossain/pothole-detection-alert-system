@@ -4,13 +4,12 @@ export async function createPotholeImagesTable() {
     try {
         await db.query(
             `CREATE TABLE IF NOT EXISTS pothole_images (
-                id VARCHAR NOT NULL,
-                url VARCHAR NOT NULL,
-                thumbnail_url VARCHAR NOT NULL,
-                pothole_id INT REFERENCES potholes(id) ON DELETE CASCADE,
-                uploaded_by VARCHAR REFERENCES users(id) ON DELETE CASCADE,
-                uploaded_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-            );`
+                    id SERIAL PRIMARY KEY,
+                    link VARCHAR NOT NULL,
+                    pothole_id INT REFERENCES potholes(id) ON DELETE CASCADE,
+                    uploaded_by VARCHAR REFERENCES users(id) ON DELETE CASCADE,
+                    uploaded_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+                );`
         );
     }
     catch (error) {

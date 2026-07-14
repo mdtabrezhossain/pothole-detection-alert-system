@@ -4,7 +4,7 @@ import Topbar from "@/components/topbar";
 import BaseLayout from "@/layouts/base";
 import VotingCard from "@/components/vote-card";
 import { useVoteCard } from "@/contexts/vote-card";
-import ImageCard from "@/components/images/image-card";
+import ImageCard from "@/components/image/image-card";
 import { useImageCard } from "@/contexts/image-card";
 import { useUser } from "@/contexts/user";
 import PotholeUpdateCard from "@/components/pothole/update-card";

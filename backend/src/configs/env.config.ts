@@ -15,6 +15,7 @@ const envVars = Object.freeze({
     imageKitPublicKey: requiredEnv("IMAGEKIT_PUBLIC_KEY"),
     imageKitUrl: requiredEnv("IMAGEKIT_URL_ENDPOINT"),
     frontendUrl: requiredEnv("FRONTEND_URL"),
+    potholeModelUrl: requiredEnv("POTHOLE_MODEL_URL"),
 });
 
 function requiredEnv(name: string): string {

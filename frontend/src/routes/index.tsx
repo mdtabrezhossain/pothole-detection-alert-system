@@ -25,7 +25,6 @@ const router = createBrowserRouter([
             { index: true, Component: NearbyPotholesPage, loader: getNearby },
             { path: "/potholes/add", Component: AddPotholePage, loader: getImageUploadToken },
             { path: "potholes/alerts", Component: GoPage },
-            { path: "/potholes/add", Component: AddPotholePage },
             { path: "/user", Component: UserPage },
             { path: "/potholes/images", Component: ImagesPage },
             { path: "users/login", Component: LoginPage },

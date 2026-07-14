@@ -7,12 +7,8 @@ const router = Router();
 router.route('/upload')
     .get(authenticateUser, getImageKitToken);
 
-router.route('/verify')
-    // .post(authenticateUser,getImageVerification);
-    .post(getImageVerification);
-
 router.route('/:potholeId')
-    // .post(authenticateUser,getImageVerification);
+    .post(authenticateUser, getImageVerification)
     .get(getImages);
 
 export default router;

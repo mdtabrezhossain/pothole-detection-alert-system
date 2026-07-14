@@ -1,8 +1,7 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import imageKit from "../utils/imagekit.js";
 import envVars from "../configs/env.config.js";
 import { db } from "../configs/db.config.js";
-
 
 export function getImageKitToken(request: Request, response: Response) {
     try {
@@ -26,12 +25,30 @@ export function getImageKitToken(request: Request, response: Response) {
     }
 }
 
-export function getImageVerification(request: Request, response: Response) {
+export async function getImageVerification(request: Request, response: Response, nextFunction: NextFunction) {
     try {
-        const body = request.body;
+        const { pothole } = request.body;
+        const { image_link } = pothole;
+        const { potholeModelUrl } = envVars;
 
-        return response.status(200)
-            .json({ message: 'image received for verification' });
+        const modelResponse = await fetch(potholeModelUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ url: image_link })
+        });
+
+        const { is_pothole, severity } = await modelResponse.json();
+
+        if (!is_pothole) {
+            return response.status(200)
+                .json({ message: 'Pothole not detected' });
+        }
+
+        pothole.severity = severity.toLowerCase();
+
+        return nextFunction();
     }
     catch (error) {
         console.error(`Error while getting image verification =>`, error);

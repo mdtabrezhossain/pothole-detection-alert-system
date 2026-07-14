@@ -5,6 +5,7 @@ import { makeRequest } from "./fetch";
 export async function getNearby() {
     const latitude = 22.551512;
     const longitude = 88.353779;
+
     const requestOptions: RequestOptions = {
         endpoint: `/potholes/?lat=${latitude}&lng=${longitude}`,
         method: "GET",
@@ -33,6 +34,27 @@ export async function getAlerts(latitude: number = 22.549947, longitude: number 
 //         );
 //     });
 // }
+
+export async function createPothole(imageUrl: string) {
+    const latitude = 0;
+    const longitude = 0;
+    const dataToSend = {
+        pothole: {
+            latitude,
+            longitude,
+            image_link: imageUrl
+        }
+    };
+
+    const requestOptions: RequestOptions = {
+        endpoint: `/potholes`,
+        method: "POST",
+        addCookies: true,
+        dataToSend
+    };
+
+    return await makeRequest(requestOptions);
+}
 
 export async function changePothole(id: number, status?: 'active' | 'fixed', severity?: 'low' | 'medium' | 'high') {
     const pothole = { id, status, severity };
