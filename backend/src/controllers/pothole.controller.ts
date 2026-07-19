@@ -213,7 +213,6 @@ export async function getRealTimeAlerts(request: Request, response: Response) {
         const longitude = Number(lng);
         const heading = Number(hd);
 
-
         const potholes = await getNearbyPotholes(latitude, longitude, 100, 3);
 
         if (!potholes) {
