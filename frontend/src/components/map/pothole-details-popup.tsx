@@ -38,12 +38,12 @@ export default function PotholeDetailsPopup({ pothole }: Props) {
         <>
             <MarkerPopup >
                 <div className="grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] place-items-center gap-1">
-                    <img className="w-100 h-25 object-cover rounded" src="/images/1.jpg"
+                    <img className="w-100 h-25 object-cover rounded" src="https://ik.imagekit.io/le4nnng4wh/scooter%20rider.jpg"
                         loading="lazy"
-                        onClick={() => showImageCard("/images/1.jpg")} />
-                    <img className="w-100 h-25 object-cover rounded" src="/images/4.jpg"
+                        onClick={() => showImageCard("https://ik.imagekit.io/le4nnng4wh/scooter%20rider.jpg")} />
+                    <img className="w-100 h-25 object-cover rounded" src="https://ik.imagekit.io/le4nnng4wh/traffic.jpg"
                         loading="lazy"
-                        onClick={() => showImageCard("/images/4.jpg")} />
+                        onClick={() => showImageCard("https://ik.imagekit.io/le4nnng4wh/traffic.jpg")} />
                 </div>
                 <button className="flex justify-end mt-2 pr-1 w-full text-blue-500 cursor-pointer" onClick={() => navigate('potholes/images')}>See more</button>
 

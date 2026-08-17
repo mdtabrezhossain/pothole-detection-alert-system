@@ -13,31 +13,31 @@ const potholes: Pothole[]
     = [
         {
             status: 'Active',
-            image_url: "/images/1.jpg",
+            image_url: "https://ik.imagekit.io/le4nnng4wh/scooter%20rider.jpg",
             location: 'Camac Street',
             reported_on: '3 Jul 2026'
         },
         {
             status: 'Active',
-            image_url: "/images/2.jpg",
+            image_url: "https://ik.imagekit.io/le4nnng4wh/petroluem%20truck.jpg",
             location: 'Robinson Street',
             reported_on: '15 June 2026'
         },
         {
             status: 'Fixed',
-            image_url: "/images/4.jpg",
+            image_url: "https://ik.imagekit.io/le4nnng4wh/traffic.jpg",
             location: 'Elliot Road',
             reported_on: '7 June 2026'
         },
         {
             status: 'Active',
-            image_url: "/images/5.jpg",
+            image_url: "https://ik.imagekit.io/le4nnng4wh/omni%20driver.jpg",
             location: 'Park Lane',
             reported_on: '28 May 2026'
         },
         {
             status: 'Active',
-            image_url: "/images/8.jpg",
+            image_url: "https://ik.imagekit.io/le4nnng4wh/school%20bus.jpg",
             location: 'Shakespeare Sarani',
             reported_on: '21 May 2026'
         }

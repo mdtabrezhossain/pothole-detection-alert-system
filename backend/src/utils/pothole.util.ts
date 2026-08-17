@@ -109,9 +109,9 @@ export function calculateDirection(fromLat: number, fromLng: number, toLat: numb
         * Math.cos(lngDiff);
 
     const bearing = Math.atan2(y, x) * radToDeg;
-    const normalisedAngle = (bearing + 360) % 360;
+    const normalizedAngle = (bearing + 360) % 360;
 
-    return normalisedAngle;
+    return normalizedAngle;
 }
 
 export function angleDifference(a: number, b: number) {
