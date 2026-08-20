@@ -12,6 +12,7 @@ Every day, riders and drivers hit potholes they never saw coming, and cities hav
 - [Key Features](#-key-features)
 - [How It Works](#-how-it-works)
 - [Database Schema](#-database-schema)
+- [Security](#-security)
 
 ## 🔎 Overview
 
@@ -116,6 +117,50 @@ If confirmed, the backend stores latitude & longitude, severity level, image lin
   - ❌ Downvote a pothole that's been fixed
 - Votes and ratings are recorded against each pothole, feeding a consensus mechanism built to flip a pothole's status to *fixed* or adjust its severity once enough agreement is reached
 - 📌 Aims to reduce fake, stale, or already-repaired potholes cluttering the map
+
+## 🗄️ Database Schema
+
+```mermaid
+erDiagram
+    USERS ||--o{ POTHOLES : reports
+    USERS ||--o{ POTHOLE_IMAGES : uploads
+    USERS ||--o{ POTHOLE_VOTES : casts
+    POTHOLES ||--o{ POTHOLE_IMAGES : has
+    POTHOLES ||--o{ POTHOLE_VOTES : receives
+ 
+    USERS {
+        varchar id PK
+        varchar name
+        varchar role
+        varchar password_hash
+        timestamptz created_at
+    }
+    POTHOLES {
+        serial id PK
+        decimal latitude
+        decimal longitude
+        varchar status
+        varchar severity
+        varchar uploaded_by FK
+        timestamptz uploaded_at
+        timestamptz updated_at
+    }
+    POTHOLE_IMAGES {
+        serial id PK
+        varchar link
+        int pothole_id FK
+        varchar uploaded_by FK
+        timestamptz uploaded_at
+    }
+    POTHOLE_VOTES {
+        serial id PK
+        varchar type
+        varchar rating
+        int pothole_id FK
+        varchar voted_by FK
+        timestamptz given_at
+    }
+```
 
 ## 🔒 Security
 
